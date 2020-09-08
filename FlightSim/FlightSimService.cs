@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using fs2ff.Models;
 using Microsoft.FlightSimulator.SimConnect;
 
@@ -15,8 +16,8 @@ namespace fs2ff.FlightSim
 
         private SimConnect? _simConnect;
 
-        public event Action<Attitude>? AttitudeReceived;
-        public event Action<Position>? PositionReceived;
+        public event Func<Attitude, Task>? AttitudeReceived;
+        public event Func<Position, Task>? PositionReceived;
         public event Action<bool>? StateChanged;
 
         public bool Connected => _simConnect != null;
@@ -127,20 +128,20 @@ namespace fs2ff.FlightSim
             DisconnectInternal(false);
         }
 
-        private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
+        private async void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             if (data.dwRequestID == (ulong) REQUEST.Position &&
                 data.dwDefineID == (ulong) DEFINITION.Position &&
                 data.dwData?.FirstOrDefault() is Position pos)
             {
-                PositionReceived?.Invoke(pos);
+                await PositionReceived.RaiseAsync(pos).ConfigureAwait(false);
             }
 
             if (data.dwRequestID == (ulong) REQUEST.Attitude &&
                 data.dwDefineID == (ulong) DEFINITION.Attitude &&
                 data.dwData?.FirstOrDefault() is Attitude att)
             {
-                AttitudeReceived?.Invoke(att);
+                await AttitudeReceived.RaiseAsync(att).ConfigureAwait(false);
             }
         }
 

@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using fs2ff.Annotations;
 using fs2ff.FlightSim;
@@ -101,14 +102,14 @@ namespace fs2ff
 
         private void Disconnect() => _flightSim.Disconnect();
 
-        private void FlightSim_AttitudeReceived(Attitude att)
+        private async Task FlightSim_AttitudeReceived(Attitude att)
         {
-            _foreFlight.Send(att);
+            await _foreFlight.Send(att).ConfigureAwait(false);
         }
 
-        private void FlightSim_PositionReceived(Position pos)
+        private async Task FlightSim_PositionReceived(Position pos)
         {
-            _foreFlight.Send(pos);
+            await _foreFlight.Send(pos).ConfigureAwait(false);
         }
 
         private void FlightSim_StateChanged(bool failure)

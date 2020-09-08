@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using fs2ff.Models;
 
 namespace fs2ff.ForeFlight
@@ -26,22 +27,27 @@ namespace fs2ff.ForeFlight
 
         public void Dispose() => _socket.Dispose();
 
-        public void Send(Attitude a)
+        public async Task Send(Attitude a)
         {
             var data = string.Format(CultureInfo.InvariantCulture,
                 "XATT{0},{1:0.#},{2:0.#},{3:0.#}",
                 SimId, a.TrueHeading, -a.Pitch, -a.Bank);
 
-            _socket.SendTo(Encoding.ASCII.GetBytes(data), _endPoint);
+            await Send(data).ConfigureAwait(false);
         }
 
-        public void Send(Position p)
+        public async Task Send(Position p)
         {
             var data = string.Format(CultureInfo.InvariantCulture,
                 "XGPS{0},{1:0.#####},{2:0.#####},{3:0.#},{4:0.###},{5:0.#}",
                 SimId, p.Longitude, p.Latitude, p.Altitude, p.GroundTrack, p.GroundSpeed);
 
-            _socket.SendTo(Encoding.ASCII.GetBytes(data), _endPoint);
+            await Send(data).ConfigureAwait(false);
         }
+
+        private async Task Send(string data) =>
+            await _socket
+                .SendToAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(data)), SocketFlags.None, _endPoint)
+                .ConfigureAwait(false);
     }
 }
