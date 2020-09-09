@@ -15,6 +15,7 @@ namespace fs2ff.FlightSim
 
         private SimConnect? _simConnect;
 
+        public event Action<Attitude>? AttitudeReceived;
         public event Action<Position>? PositionReceived;
         public event Action<bool>? StateChanged;
 
@@ -67,6 +68,15 @@ namespace fs2ff.FlightSim
             StateChanged?.Invoke(failure);
         }
 
+        private void RegisterAttitudeStruct()
+        {
+            AddToDataDefinition(DEFINITION.Attitude, "PLANE PITCH DEGREES", "Degrees");
+            AddToDataDefinition(DEFINITION.Attitude, "PLANE BANK DEGREES", "Degrees");
+            AddToDataDefinition(DEFINITION.Attitude, "PLANE HEADING DEGREES TRUE", "Degrees");
+
+            _simConnect?.RegisterDataDefineStruct<Attitude>(DEFINITION.Attitude);
+        }
+
         private void RegisterPositionStruct()
         {
             AddToDataDefinition(DEFINITION.Position, "PLANE LATITUDE", "Degrees");
@@ -78,6 +88,19 @@ namespace fs2ff.FlightSim
             _simConnect?.RegisterDataDefineStruct<Position>(DEFINITION.Position);
         }
 
+        private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
+        {
+            if (data.uEventID == (ulong) EVENT.SixHz)
+            {
+                _simConnect?.RequestDataOnSimObject(
+                    REQUEST.Attitude, DEFINITION.Attitude,
+                    SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                    SIMCONNECT_PERIOD.ONCE,
+                    SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
+                    0, 0, 0);
+            }
+        }
+
         private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             Console.Error.WriteLine("Exception caught: " + data.dwException);
@@ -87,6 +110,7 @@ namespace fs2ff.FlightSim
         private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV data)
         {
             RegisterPositionStruct();
+            RegisterAttitudeStruct();
 
             _simConnect?.RequestDataOnSimObject(
                 REQUEST.Position, DEFINITION.Position,
@@ -94,6 +118,8 @@ namespace fs2ff.FlightSim
                 SIMCONNECT_PERIOD.SECOND,
                 SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
                 0, 0, 0);
+
+            _simConnect?.SubscribeToSystemEvent(EVENT.SixHz, "6Hz");
         }
 
         private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
@@ -109,6 +135,13 @@ namespace fs2ff.FlightSim
             {
                 PositionReceived?.Invoke(pos);
             }
+
+            if (data.dwRequestID == (ulong) REQUEST.Attitude &&
+                data.dwDefineID == (ulong) DEFINITION.Attitude &&
+                data.dwData?.FirstOrDefault() is Attitude att)
+            {
+                AttitudeReceived?.Invoke(att);
+            }
         }
 
         private void SubscribeEvents()
@@ -117,6 +150,7 @@ namespace fs2ff.FlightSim
             {
                 _simConnect.OnRecvOpen += SimConnect_OnRecvOpen;
                 _simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+                _simConnect.OnRecvEvent += SimConnect_OnRecvEvent;
                 _simConnect.OnRecvException += SimConnect_OnRecvException;
                 _simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
             }
@@ -128,6 +162,7 @@ namespace fs2ff.FlightSim
             {
                 _simConnect.OnRecvSimobjectData -= SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvException -= SimConnect_OnRecvException;
+                _simConnect.OnRecvEvent -= SimConnect_OnRecvEvent;
                 _simConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
                 _simConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
             }

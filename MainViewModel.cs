@@ -23,6 +23,7 @@ namespace fs2ff
             _flightSim = flightSim;
             _flightSim.StateChanged += FlightSim_StateChanged;
             _flightSim.PositionReceived += FlightSim_PositionReceived;
+            _flightSim.AttitudeReceived += FlightSim_AttitudeReceived;
 
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
         }
@@ -70,6 +71,7 @@ namespace fs2ff
 
         public void Dispose()
         {
+            _flightSim.AttitudeReceived -= FlightSim_AttitudeReceived;
             _flightSim.PositionReceived -= FlightSim_PositionReceived;
             _flightSim.StateChanged -= FlightSim_StateChanged;
             _flightSim.Dispose();
@@ -94,6 +96,11 @@ namespace fs2ff
         private void Connect() => _flightSim.Connect(_hwnd);
 
         private void Disconnect() => _flightSim.Disconnect();
+
+        private static void FlightSim_AttitudeReceived(Attitude pos)
+        {
+            // TODO: Send to ForeFlight
+        }
 
         private static void FlightSim_PositionReceived(Position pos)
         {
