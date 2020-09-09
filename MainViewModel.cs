@@ -7,15 +7,20 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 using fs2ff.Annotations;
+using fs2ff.FlightSim;
 
 namespace fs2ff
 {
     public class MainViewModel : INotifyPropertyChanged, IDisposable
     {
+        private readonly FlightSimService _flightSim;
+
         private bool _errorOccurred = false;
 
-        public MainViewModel()
+        public MainViewModel(FlightSimService flightSim)
         {
+            _flightSim = flightSim;
+
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
         }
 
@@ -62,7 +67,7 @@ namespace fs2ff
 
         public void Dispose()
         {
-            // TODO: Dispose resources
+            _flightSim.Dispose();
         }
 
         [NotifyPropertyChangedInvocator]
