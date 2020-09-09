@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using System.Windows.Media;
 using fs2ff.Annotations;
 using fs2ff.FlightSim;
@@ -15,11 +14,13 @@ namespace fs2ff
     {
         private readonly FlightSimService _flightSim;
 
-        private bool _errorOccurred = false;
+        private bool _errorOccurred;
+        private IntPtr _hwnd = IntPtr.Zero;
 
         public MainViewModel(FlightSimService flightSim)
         {
             _flightSim = flightSim;
+            _flightSim.StateChanged += FlightSim_StateChanged;
 
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
         }
@@ -54,9 +55,9 @@ namespace fs2ff
                 _                             => ""
             };
 
-        public ICommand ToggleConnectCommand { get; }
+        public ActionCommand ToggleConnectCommand { get; }
 
-        private bool Connected => false; // TODO: Return Flight Simulator connection status
+        private bool Connected => _flightSim.Connected;
 
         private FlightSimState CurrentFlightSimState =>
             _errorOccurred
@@ -67,7 +68,14 @@ namespace fs2ff
 
         public void Dispose()
         {
+            _flightSim.StateChanged -= FlightSim_StateChanged;
             _flightSim.Dispose();
+        }
+
+        internal void SetWindowHandle(IntPtr hWnd)
+        {
+            _hwnd = hWnd;
+            ToggleConnectCommand.TriggerCanExecuteChanged();
         }
 
         [NotifyPropertyChangedInvocator]
@@ -76,11 +84,19 @@ namespace fs2ff
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool CanConnect() => false; // TODO: Implement connectability check
+        private bool CanConnect() => _hwnd != IntPtr.Zero;
 
-        private void Connect() { /* TODO: Connect to Flight Simulator */ }
+        private void Connect() => _flightSim.Connect(_hwnd);
 
-        private void Disconnect() { /* TODO: Disconnect from Flight Simulator */ }
+        private void Disconnect() => _flightSim.Disconnect();
+
+        private void FlightSim_StateChanged(bool failure)
+        {
+            _errorOccurred = failure;
+            OnPropertyChanged(nameof(StateLabelText));
+            OnPropertyChanged(nameof(StateLabelColor));
+            OnPropertyChanged(nameof(ConnectButtonLabel));
+        }
 
         private void ToggleConnect()
         {

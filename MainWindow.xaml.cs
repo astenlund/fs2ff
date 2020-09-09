@@ -20,7 +20,9 @@ namespace fs2ff
         {
             base.OnSourceInitialized(e);
 
-            ((HwndSource) PresentationSource.FromVisual(this)!).AddHook(WndProc);
+            HwndSource hwndSource = (HwndSource) PresentationSource.FromVisual(this)!;
+            hwndSource.AddHook(WndProc);
+            ((MainViewModel) DataContext).SetWindowHandle(hwndSource.Handle);
         }
 
         private static IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)
