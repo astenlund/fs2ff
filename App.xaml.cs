@@ -1,5 +1,6 @@
 ﻿using System;
 using fs2ff.FlightSim;
+using fs2ff.ForeFlight;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -25,6 +26,7 @@ namespace fs2ff
         {
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<FlightSimService>();
+            services.AddSingleton<ForeFlightService>();
         }
     }
 }

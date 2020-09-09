@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using fs2ff.Annotations;
 using fs2ff.FlightSim;
+using fs2ff.ForeFlight;
 using fs2ff.Models;
 
 namespace fs2ff
@@ -14,12 +15,14 @@ namespace fs2ff
     public class MainViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly FlightSimService _flightSim;
+        private readonly ForeFlightService _foreFlight;
 
         private bool _errorOccurred;
         private IntPtr _hwnd = IntPtr.Zero;
 
-        public MainViewModel(FlightSimService flightSim)
+        public MainViewModel(ForeFlightService foreFlight, FlightSimService flightSim)
         {
+            _foreFlight = foreFlight;
             _flightSim = flightSim;
             _flightSim.StateChanged += FlightSim_StateChanged;
             _flightSim.PositionReceived += FlightSim_PositionReceived;
@@ -75,6 +78,7 @@ namespace fs2ff
             _flightSim.PositionReceived -= FlightSim_PositionReceived;
             _flightSim.StateChanged -= FlightSim_StateChanged;
             _flightSim.Dispose();
+            _foreFlight.Dispose();
         }
 
         internal void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
@@ -97,14 +101,14 @@ namespace fs2ff
 
         private void Disconnect() => _flightSim.Disconnect();
 
-        private static void FlightSim_AttitudeReceived(Attitude pos)
+        private void FlightSim_AttitudeReceived(Attitude att)
         {
-            // TODO: Send to ForeFlight
+            _foreFlight.Send(att);
         }
 
-        private static void FlightSim_PositionReceived(Position pos)
+        private void FlightSim_PositionReceived(Position pos)
         {
-            // TODO: Send to ForeFlight
+            _foreFlight.Send(pos);
         }
 
         private void FlightSim_StateChanged(bool failure)
