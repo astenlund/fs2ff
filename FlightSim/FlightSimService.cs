@@ -1,7 +1,9 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
+using fs2ff.Models;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace fs2ff.FlightSim
@@ -13,6 +15,7 @@ namespace fs2ff.FlightSim
 
         private SimConnect? _simConnect;
 
+        public event Action<Position>? PositionReceived;
         public event Action<bool>? StateChanged;
 
         public bool Connected => _simConnect != null;
@@ -22,6 +25,7 @@ namespace fs2ff.FlightSim
             try
             {
                 _simConnect = new SimConnect(AppName, hwnd, WM_USER_SIMCONNECT, null, 0);
+                SubscribeEvents();
                 StateChanged?.Invoke(false);
             }
             catch (COMException e)
@@ -48,12 +52,85 @@ namespace fs2ff.FlightSim
             }
         }
 
+        private void AddToDataDefinition(DEFINITION defineId, string datumName, string unitsName, SIMCONNECT_DATATYPE datumType = SIMCONNECT_DATATYPE.FLOAT64)
+        {
+            _simConnect?.AddToDataDefinition(defineId, datumName, unitsName, datumType, 0, SimConnect.SIMCONNECT_UNUSED);
+        }
+
         private void DisconnectInternal(bool failure)
         {
+            UnsubscribeEvents();
+
             _simConnect?.Dispose();
             _simConnect = null;
 
             StateChanged?.Invoke(failure);
+        }
+
+        private void RegisterPositionStruct()
+        {
+            AddToDataDefinition(DEFINITION.Position, "PLANE LATITUDE", "Degrees");
+            AddToDataDefinition(DEFINITION.Position, "PLANE LONGITUDE", "Degrees");
+            AddToDataDefinition(DEFINITION.Position, "PLANE ALTITUDE", "Meters");
+            AddToDataDefinition(DEFINITION.Position, "GPS GROUND TRUE TRACK", "Degrees");
+            AddToDataDefinition(DEFINITION.Position, "GPS GROUND SPEED", "Meters per second");
+
+            _simConnect?.RegisterDataDefineStruct<Position>(DEFINITION.Position);
+        }
+
+        private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
+        {
+            Console.Error.WriteLine("Exception caught: " + data.dwException);
+            DisconnectInternal(true);
+        }
+
+        private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV data)
+        {
+            RegisterPositionStruct();
+
+            _simConnect?.RequestDataOnSimObject(
+                REQUEST.Position, DEFINITION.Position,
+                SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                SIMCONNECT_PERIOD.SECOND,
+                SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
+                0, 0, 0);
+        }
+
+        private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
+        {
+            DisconnectInternal(false);
+        }
+
+        private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
+        {
+            if (data.dwRequestID == (ulong) REQUEST.Position &&
+                data.dwDefineID == (ulong) DEFINITION.Position &&
+                data.dwData?.FirstOrDefault() is Position pos)
+            {
+                PositionReceived?.Invoke(pos);
+            }
+        }
+
+        private void SubscribeEvents()
+        {
+            if (_simConnect != null)
+            {
+                _simConnect.OnRecvOpen += SimConnect_OnRecvOpen;
+                _simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+                _simConnect.OnRecvException += SimConnect_OnRecvException;
+                _simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
+            }
+        }
+
+        private void UnsubscribeEvents()
+        {
+            if (_simConnect != null)
+            {
+                _simConnect.OnRecvSimobjectData -= SimConnect_OnRecvSimobjectData;
+                _simConnect.OnRecvException -= SimConnect_OnRecvException;
+                _simConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
+                _simConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
+            }
         }
     }
 }
