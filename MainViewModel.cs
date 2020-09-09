@@ -72,6 +72,8 @@ namespace fs2ff
             _flightSim.Dispose();
         }
 
+        internal void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
+
         internal void SetWindowHandle(IntPtr hWnd)
         {
             _hwnd = hWnd;

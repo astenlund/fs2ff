@@ -25,11 +25,11 @@ namespace fs2ff
             ((MainViewModel) DataContext).SetWindowHandle(hwndSource.Handle);
         }
 
-        private static IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)
+        private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)
         {
             if (iMsg == WM_USER_SIMCONNECT)
             {
-                // TODO: Forward message
+                ((MainViewModel) DataContext).ReceiveFlightSimMessage();
             }
 
             return IntPtr.Zero;

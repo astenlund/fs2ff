@@ -31,17 +31,29 @@ namespace fs2ff.FlightSim
             }
         }
 
-        public void Disconnect()
+        public void Disconnect() => DisconnectInternal(false);
+
+        public void Dispose() => DisconnectInternal(false);
+
+        public void ReceiveMessage()
+        {
+            try
+            {
+                _simConnect?.ReceiveMessage();
+            }
+            catch (COMException e)
+            {
+                Console.Error.WriteLine("Exception caught: " + e);
+                DisconnectInternal(true);
+            }
+        }
+
+        private void DisconnectInternal(bool failure)
         {
             _simConnect?.Dispose();
             _simConnect = null;
 
-            StateChanged?.Invoke(false);
-        }
-
-        public void Dispose()
-        {
-            _simConnect?.Dispose();
+            StateChanged?.Invoke(failure);
         }
     }
 }
