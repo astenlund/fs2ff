@@ -1,6 +1,10 @@
 ﻿# Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
+# ReSharper annotations
+[Annotations.cs]
+dotnet_diagnostic.CS8618.severity = none
+
 # C# files
 [*.cs]
 

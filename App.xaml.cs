@@ -1,17 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace fs2ff
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
+        public App()
+        {
+            var host = new HostBuilder()
+                .ConfigureServices(ConfigureServices)
+                .Build();
+
+            ServiceProvider = host.Services;
+        }
+
+        public static IServiceProvider? ServiceProvider { get; private set; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<MainViewModel>();
+        }
     }
 }

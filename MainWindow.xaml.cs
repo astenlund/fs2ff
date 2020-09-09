@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -30,6 +31,11 @@ namespace fs2ff
             }
 
             return IntPtr.Zero;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            ((MainViewModel) DataContext).Dispose();
         }
     }
 }

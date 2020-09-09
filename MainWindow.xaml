@@ -7,7 +7,9 @@
         Title="fs2ff (Flight Simulator -> ForeFlight)"
         Background="#FF232323"
         Width="525" Height="350"
-        MinWidth="375" MinHeight="250">
+        MinWidth="375" MinHeight="250"
+        Closing="Window_Closing"
+        DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Grid>
 
     </Grid>
