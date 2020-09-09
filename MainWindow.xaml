@@ -10,7 +10,25 @@
         MinWidth="375" MinHeight="250"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
-    <Grid>
-
+    <Grid FocusManager.FocusedElement="{Binding ElementName=ConnectButton}">
+        <Button
+            Name="ConnectButton"
+            Content="{Binding ConnectButtonLabel}"
+            Command="{Binding ToggleConnectCommand}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontFamily="Segoe UI"
+            Width="120"
+            Height="50" />
+        <Label
+            Content="{Binding StateLabelText}"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            IsHitTestVisible="False"
+            Foreground="{Binding StateLabelColor}"
+            FontFamily="Segoe UI"
+            FontSize="12"
+            Padding="3"
+            Margin="15,10" />
     </Grid>
 </Window>
