@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="fs2ff (Flight Simulator -> ForeFlight)"
+        Icon="img\icon.ico"
         Background="#FF232323"
         Width="525" Height="350"
         MinWidth="375" MinHeight="250"
