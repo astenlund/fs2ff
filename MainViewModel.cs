@@ -13,7 +13,7 @@ using fs2ff.Models;
 
 namespace fs2ff
 {
-    public class MainViewModel : INotifyPropertyChanged, IDisposable
+    public class MainViewModel : INotifyPropertyChanged, IFlightSimMessageHandler
     {
         private readonly FlightSimService _flightSim;
         private readonly ForeFlightService _foreFlight;
@@ -73,6 +73,16 @@ namespace fs2ff
                     ? FlightSimState.Connected
                     : FlightSimState.Disconnected;
 
+        public IntPtr WindowHandle
+        {
+            get => _hwnd;
+            set
+            {
+                _hwnd = value;
+                ToggleConnectCommand.TriggerCanExecuteChanged();
+            }
+        }
+
         public void Dispose()
         {
             _flightSim.AttitudeReceived -= FlightSim_AttitudeReceived;
@@ -82,13 +92,7 @@ namespace fs2ff
             _foreFlight.Dispose();
         }
 
-        internal void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
-
-        internal void SetWindowHandle(IntPtr hWnd)
-        {
-            _hwnd = hWnd;
-            ToggleConnectCommand.TriggerCanExecuteChanged();
-        }
+        public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -96,9 +100,9 @@ namespace fs2ff
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool CanConnect() => _hwnd != IntPtr.Zero;
+        private bool CanConnect() => WindowHandle != IntPtr.Zero;
 
-        private void Connect() => _flightSim.Connect(_hwnd);
+        private void Connect() => _flightSim.Connect(WindowHandle);
 
         private void Disconnect() => _flightSim.Disconnect();
 
