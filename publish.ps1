@@ -21,9 +21,12 @@ dotnet restore
 dotnet publish `
     -r $Runtime `
     -c $Configuration `
-    /p:DebugType=None `
-    /p:DebugSymbols=False `
-    /p:PublishSingleFile=True `
+    /p:DebugType=none `
+    /p:DebugSymbols=false `
+    /p:SelfContained=true `
+    /p:PublishSingleFile=true `
+    /P:PublishReadyToRun=true `
+    /p:PublishReadyToRunShowWarnings=true `
     /p:Version=$Version
 
 Get-Item "$PublishDir\fs2ff.exe" |
