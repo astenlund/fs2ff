@@ -28,6 +28,7 @@ namespace fs2ff
             _flightSim.StateChanged += FlightSim_StateChanged;
             _flightSim.PositionReceived += FlightSim_PositionReceived;
             _flightSim.AttitudeReceived += FlightSim_AttitudeReceived;
+            _flightSim.TrafficReceived += FlightSim_TrafficReceived;
 
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
         }
@@ -85,6 +86,7 @@ namespace fs2ff
 
         public void Dispose()
         {
+            _flightSim.TrafficReceived -= FlightSim_TrafficReceived;
             _flightSim.AttitudeReceived -= FlightSim_AttitudeReceived;
             _flightSim.PositionReceived -= FlightSim_PositionReceived;
             _flightSim.StateChanged -= FlightSim_StateChanged;
@@ -122,6 +124,11 @@ namespace fs2ff
             OnPropertyChanged(nameof(StateLabelText));
             OnPropertyChanged(nameof(StateLabelColor));
             OnPropertyChanged(nameof(ConnectButtonLabel));
+        }
+
+        private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
+        {
+            await _foreFlight.Send(tfk, id).ConfigureAwait(false);
         }
 
         private void ToggleConnect()

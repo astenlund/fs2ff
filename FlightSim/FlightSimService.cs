@@ -19,6 +19,7 @@ namespace fs2ff.FlightSim
         public event Func<Attitude, Task>? AttitudeReceived;
         public event Func<Position, Task>? PositionReceived;
         public event Action<bool>? StateChanged;
+        public event Func<Traffic, uint, Task>? TrafficReceived;
 
         public bool Connected => _simConnect != null;
 
@@ -54,7 +55,7 @@ namespace fs2ff.FlightSim
             }
         }
 
-        private void AddToDataDefinition(DEFINITION defineId, string datumName, string unitsName, SIMCONNECT_DATATYPE datumType = SIMCONNECT_DATATYPE.FLOAT64)
+        private void AddToDataDefinition(DEFINITION defineId, string datumName, string? unitsName, SIMCONNECT_DATATYPE datumType = SIMCONNECT_DATATYPE.FLOAT64)
         {
             _simConnect?.AddToDataDefinition(defineId, datumName, unitsName, datumType, 0, SimConnect.SIMCONNECT_UNUSED);
         }
@@ -89,6 +90,22 @@ namespace fs2ff.FlightSim
             _simConnect?.RegisterDataDefineStruct<Position>(DEFINITION.Position);
         }
 
+        private void RegisterTrafficStruct()
+        {
+            AddToDataDefinition(DEFINITION.Traffic, "PLANE LATITUDE", "Degrees");
+            AddToDataDefinition(DEFINITION.Traffic, "PLANE LONGITUDE", "Degrees");
+            AddToDataDefinition(DEFINITION.Traffic, "PLANE ALTITUDE", "Feet");
+            AddToDataDefinition(DEFINITION.Traffic, "VELOCITY WORLD Y", "Feet per minute");
+            AddToDataDefinition(DEFINITION.Traffic, "SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32);
+            AddToDataDefinition(DEFINITION.Traffic, "PLANE HEADING DEGREES TRUE", "Degrees");
+            AddToDataDefinition(DEFINITION.Traffic, "GROUND VELOCITY", "Knots");
+            AddToDataDefinition(DEFINITION.Traffic, "ATC ID", null, SIMCONNECT_DATATYPE.STRING64);
+            AddToDataDefinition(DEFINITION.Traffic, "ATC AIRLINE", null, SIMCONNECT_DATATYPE.STRING64);
+            AddToDataDefinition(DEFINITION.Traffic, "ATC FLIGHT NUMBER", null, SIMCONNECT_DATATYPE.STRING8);
+
+            _simConnect?.RegisterDataDefineStruct<Traffic>(DEFINITION.Traffic);
+        }
+
         private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
         {
             if (data.uEventID == (uint) EVENT.SixHz)
@@ -97,6 +114,22 @@ namespace fs2ff.FlightSim
                     REQUEST.Attitude, DEFINITION.Attitude,
                     SimConnect.SIMCONNECT_OBJECT_ID_USER,
                     SIMCONNECT_PERIOD.ONCE,
+                    SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
+                    0, 0, 0);
+            }
+        }
+
+        private void SimConnect_OnRecvEventObjectAddremove(SimConnect sender, SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE data)
+        {
+            if (data.uEventID == (uint) EVENT.ObjectAdded &&
+                (data.eObjType == SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT ||
+                 data.eObjType == SIMCONNECT_SIMOBJECT_TYPE.HELICOPTER) &&
+                data.dwData != SimConnect.SIMCONNECT_OBJECT_ID_USER)
+            {
+                _simConnect?.RequestDataOnSimObject(
+                    REQUEST.TrafficObjectBase + data.dwData,
+                    DEFINITION.Traffic, data.dwData,
+                    SIMCONNECT_PERIOD.SECOND,
                     SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
                     0, 0, 0);
             }
@@ -112,6 +145,7 @@ namespace fs2ff.FlightSim
         {
             RegisterPositionStruct();
             RegisterAttitudeStruct();
+            RegisterTrafficStruct();
 
             _simConnect?.RequestDataOnSimObject(
                 REQUEST.Position, DEFINITION.Position,
@@ -120,6 +154,10 @@ namespace fs2ff.FlightSim
                 SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
                 0, 0, 0);
 
+            _simConnect?.RequestDataOnSimObjectType(REQUEST.TrafficAircraft, DEFINITION.Traffic, 200000, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
+            _simConnect?.RequestDataOnSimObjectType(REQUEST.TrafficHelicopter, DEFINITION.Traffic, 200000, SIMCONNECT_SIMOBJECT_TYPE.HELICOPTER);
+
+            _simConnect?.SubscribeToSystemEvent(EVENT.ObjectAdded, "ObjectAdded");
             _simConnect?.SubscribeToSystemEvent(EVENT.SixHz, "6Hz");
         }
 
@@ -143,6 +181,30 @@ namespace fs2ff.FlightSim
             {
                 await AttitudeReceived.RaiseAsync(att).ConfigureAwait(false);
             }
+
+            if (data.dwRequestID == (uint) REQUEST.TrafficObjectBase + data.dwObjectID &&
+                data.dwDefineID == (uint) DEFINITION.Traffic &&
+                data.dwObjectID != SimConnect.SIMCONNECT_OBJECT_ID_USER &&
+                data.dwData?.FirstOrDefault() is Traffic tfk)
+            {
+                await TrafficReceived.RaiseAsync(tfk, data.dwObjectID).ConfigureAwait(false);
+            }
+        }
+
+        private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
+        {
+            if ((data.dwRequestID == (uint) REQUEST.TrafficAircraft ||
+                 data.dwRequestID == (uint) REQUEST.TrafficHelicopter) &&
+                data.dwDefineID == (uint) DEFINITION.Traffic &&
+                data.dwObjectID != SimConnect.SIMCONNECT_OBJECT_ID_USER)
+            {
+                _simConnect?.RequestDataOnSimObject(
+                    REQUEST.TrafficObjectBase + data.dwObjectID,
+                    DEFINITION.Traffic, data.dwObjectID,
+                    SIMCONNECT_PERIOD.SECOND,
+                    SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
+                    0, 0, 0);
+            }
         }
 
         private void SubscribeEvents()
@@ -154,6 +216,8 @@ namespace fs2ff.FlightSim
                 _simConnect.OnRecvEvent += SimConnect_OnRecvEvent;
                 _simConnect.OnRecvException += SimConnect_OnRecvException;
                 _simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
+                _simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
+                _simConnect.OnRecvEventObjectAddremove += SimConnect_OnRecvEventObjectAddremove;
             }
         }
 
@@ -161,6 +225,8 @@ namespace fs2ff.FlightSim
         {
             if (_simConnect != null)
             {
+                _simConnect.OnRecvEventObjectAddremove -= SimConnect_OnRecvEventObjectAddremove;
+                _simConnect.OnRecvSimobjectDataBytype -= SimConnect_OnRecvSimobjectDataBytype;
                 _simConnect.OnRecvSimobjectData -= SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvException -= SimConnect_OnRecvException;
                 _simConnect.OnRecvEvent -= SimConnect_OnRecvEvent;

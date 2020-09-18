@@ -45,9 +45,24 @@ namespace fs2ff.ForeFlight
             await Send(data).ConfigureAwait(false);
         }
 
+        public async Task Send(Traffic t, uint id)
+        {
+            var data = string.Format(CultureInfo.InvariantCulture,
+                "XTRAFFIC{0},{1},{2:0.#####},{3:0.#####},{4:0.#},{5:0.#},{6},{7:0.###},{8:0.#},{9}",
+                SimId, id, t.Latitude, t.Longitude, t.Altitude, t.VerticalSpeed, t.OnGround ? 0 : 1,
+                t.TrueHeading, t.GroundVelocity, TryGetFlightNumber(t) ?? t.TailNumber);
+
+            await Send(data).ConfigureAwait(false);
+        }
+
         private async Task Send(string data) =>
             await _socket
                 .SendToAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(data)), SocketFlags.None, _endPoint)
                 .ConfigureAwait(false);
+
+        private static string? TryGetFlightNumber(Traffic t) =>
+            !string.IsNullOrEmpty(t.Airline) && !string.IsNullOrEmpty(t.FlightNumber)
+                ? $"{t.Airline} {t.FlightNumber}"
+                : null;
     }
 }

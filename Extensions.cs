@@ -22,5 +22,23 @@ namespace fs2ff
 
             await Task.WhenAll(tasks);
         }
+
+        public static async Task RaiseAsync<T1, T2>(this Func<T1, T2, Task>? handler, T1 value1, T2 value2)
+        {
+            if (handler == null)
+            {
+                return;
+            }
+
+            Delegate[] delegates = handler.GetInvocationList();
+            Task[] tasks = new Task[delegates.Length];
+
+            for (var i = 0; i < delegates.Length; i++)
+            {
+                tasks[i] = ((Func<T1, T2, Task>) delegates[i])(value1, value2);
+            }
+
+            await Task.WhenAll(tasks);
+        }
     }
 }

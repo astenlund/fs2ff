@@ -8,6 +8,8 @@ namespace fs2ff.FlightSim
         Undefined,
         Position,
         Attitude,
-        Traffic
+        TrafficAircraft,
+        TrafficHelicopter,
+        TrafficObjectBase = 0x01000000
     }
 }
