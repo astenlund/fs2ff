@@ -3,7 +3,7 @@
 
 namespace fs2ff.FlightSim
 {
-    public enum REQUEST : ulong
+    public enum REQUEST : uint
     {
         Undefined,
         Position,

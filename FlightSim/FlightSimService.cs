@@ -91,7 +91,7 @@ namespace fs2ff.FlightSim
 
         private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
         {
-            if (data.uEventID == (ulong) EVENT.SixHz)
+            if (data.uEventID == (uint) EVENT.SixHz)
             {
                 _simConnect?.RequestDataOnSimObject(
                     REQUEST.Attitude, DEFINITION.Attitude,
@@ -130,15 +130,15 @@ namespace fs2ff.FlightSim
 
         private async void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            if (data.dwRequestID == (ulong) REQUEST.Position &&
-                data.dwDefineID == (ulong) DEFINITION.Position &&
+            if (data.dwRequestID == (uint) REQUEST.Position &&
+                data.dwDefineID == (uint) DEFINITION.Position &&
                 data.dwData?.FirstOrDefault() is Position pos)
             {
                 await PositionReceived.RaiseAsync(pos).ConfigureAwait(false);
             }
 
-            if (data.dwRequestID == (ulong) REQUEST.Attitude &&
-                data.dwDefineID == (ulong) DEFINITION.Attitude &&
+            if (data.dwRequestID == (uint) REQUEST.Attitude &&
+                data.dwDefineID == (uint) DEFINITION.Attitude &&
                 data.dwData?.FirstOrDefault() is Attitude att)
             {
                 await AttitudeReceived.RaiseAsync(att).ConfigureAwait(false);

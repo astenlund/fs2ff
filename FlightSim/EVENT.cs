@@ -3,7 +3,7 @@
 
 namespace fs2ff.FlightSim
 {
-    public enum EVENT : ulong
+    public enum EVENT : uint
     {
         Undefined,
         SixHz
