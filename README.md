@@ -20,15 +20,27 @@ __N.B.__ Since I have not bothered to create an installer for this app, you will
 
 ## Ok, but what does it actually do?
 
-The app uses Microsoft's SimConnect SDK to continuously collect information about the player's own aircraft in the game, and then broadcast these data so they can be picked up by ForeFlight. This requires that the ForeFlight device is connected to the same Wi-Fi network as the Flight Sim computer. Also, UDP port 49002 must not be blocked by any firewalls.
+The app uses Microsoft's SimConnect SDK to continuously collect data about the player's own aircraft in the game, as well as other traffic around the player, and then broadcast these data so they can be picked up by ForeFlight. This requires that the ForeFlight device is connected to the same Wi-Fi network as the Flight Sim computer. Also, UDP port 49002 must not be blocked by any firewalls.
 
-The app might also work with SkyDemon and other EFB apps, but this remains untested as of yet. Also untested are earlier versions of Flight Simulator as well as Prepar3D.
+## Does it work other EFB apps?
 
-If you are using X-Plane, there is already built-in functionality that does exactly this, see [this support page](https://foreflight.com/support/support-center/category/about-foreflight-mobile/204115525).
+### SkyDemon
 
-## What doesn't it do (yet)?
+Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will need to enable the X-Plane toggle in the Third Party Devices settings pane under the cogwheel in SkyDemon. Then, when you start flying, select "Use X-Plane".
 
-Other traffic is not being picked up just yet. This means that if you are in a flight with friends, you will not be able to see them in ForeFlight. This might be added in a future update.
+### Other apps
+
+As of now, no other EFB apps have been tested.
+
+## Does it work with other flight simulators?
+
+### X-Plane
+
+No need for my app. X-Plane already has this broadcast capability built-in, see [this support page](https://foreflight.com/support/support-center/category/about-foreflight-mobile/204115525).
+
+### Other flight sims
+
+As of now, no other flight simulators have been tested.
 
 ## How do I build this?
 
