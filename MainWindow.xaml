@@ -14,7 +14,7 @@
     <Grid FocusManager.FocusedElement="{Binding ElementName=ConnectButton}">
         <Button
             Name="ConnectButton"
-            Content="{Binding ConnectButtonLabel}"
+            Content="{Binding ConnectButtonLabel, FallbackValue='Connect'}"
             Command="{Binding ToggleConnectCommand}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -22,11 +22,11 @@
             Width="120"
             Height="50" />
         <Label
-            Content="{Binding StateLabelText}"
+            Content="{Binding StateLabelText, FallbackValue='NOT CONNECTED'}"
             HorizontalAlignment="Left"
             VerticalAlignment="Bottom"
             IsHitTestVisible="False"
-            Foreground="{Binding StateLabelColor}"
+            Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
             FontFamily="Segoe UI"
             FontSize="12"
             Padding="3"
