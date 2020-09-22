@@ -4,33 +4,109 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
         Width="525" Height="350"
-        MinWidth="375" MinHeight="250"
+        MinWidth="400" MinHeight="200"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
-    <Grid FocusManager.FocusedElement="{Binding ElementName=ConnectButton}">
-        <Button
-            Name="ConnectButton"
-            Content="{Binding ConnectButtonLabel, FallbackValue='Connect'}"
-            Command="{Binding ToggleConnectCommand}"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontFamily="Segoe UI"
-            Width="120"
-            Height="50" />
-        <Label
-            Content="{Binding StateLabelText, FallbackValue='NOT CONNECTED'}"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
-            IsHitTestVisible="False"
-            Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
-            FontFamily="Segoe UI"
-            FontSize="12"
-            Padding="3"
-            Margin="15,10" />
-    </Grid>
+    <ui:SplitView
+        Name="SettingsPane"
+        IsPaneOpen="{Binding SettingsPaneVisible}"
+        DisplayMode="Inline"
+        OpenPaneLength="140"
+        PanePlacement="Right">
+        <i:Interaction.Triggers>
+            <i:KeyTrigger Key="Escape">
+                <i:Interaction.Behaviors>
+                    <i:ConditionBehavior>
+                        <i:ConditionalExpression>
+                            <i:ComparisonCondition LeftOperand="{Binding IsPaneOpen, ElementName=SettingsPane}" RightOperand="True" />
+                        </i:ConditionalExpression>
+                    </i:ConditionBehavior>
+                </i:Interaction.Behaviors>
+                <i:InvokeCommandAction Command="{Binding DismissSettingsPaneCommand, Mode=OneWay}" />
+            </i:KeyTrigger>
+        </i:Interaction.Triggers>
+        <ui:SplitView.Pane>
+            <StackPanel
+                Orientation="Vertical"
+                Margin="15,10,0,0">
+                <Label
+                    Content="DATA SELECTION"
+                    Foreground="DarkGray"
+                    FontFamily="Segoe UI"
+                    Margin="0,5" />
+                <CheckBox
+                    IsChecked="{Binding DataPositionEnabled, Mode=TwoWay}"
+                    Content="Position"
+                    FontFamily="Segoe UI" />
+                <CheckBox
+                    IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
+                    Content="Attitude"
+                    FontFamily="Segoe UI" />
+                <CheckBox
+                    IsChecked="{Binding DataTrafficEnabled, Mode=TwoWay}"
+                    Content="Traffic"
+                    FontFamily="Segoe UI" />
+            </StackPanel>
+        </ui:SplitView.Pane>
+        <Grid FocusManager.FocusedElement="{Binding ElementName=ConnectButton}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button
+                Grid.Row="0"
+                Grid.Column="0"
+                Name="ConnectButton"
+                Content="{Binding ConnectButtonLabel, FallbackValue='Connect'}"
+                Command="{Binding ToggleConnectCommand}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontFamily="Segoe UI"
+                Width="144"
+                Height="60" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="{Binding StateLabelText, FallbackValue='NOT CONNECTED'}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                IsHitTestVisible="False"
+                Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
+                FontFamily="Segoe UI"
+                FontSize="12"
+                Padding="3"
+                Margin="15,10" />
+            <ToggleButton
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.RowSpan="2"
+                IsChecked="{Binding SettingsPaneVisible, Mode=TwoWay}"
+                VerticalAlignment="Stretch"
+                FontFamily="Segoe UI"
+                Width="47">
+                <ToggleButton.ContentTemplate>
+                    <DataTemplate>
+                        <Label Content="S   E   T   T   I   N   G   S">
+                            <Label.LayoutTransform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="90" />
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </TransformGroup>
+                            </Label.LayoutTransform>
+                        </Label>
+                    </DataTemplate>
+                </ToggleButton.ContentTemplate>
+            </ToggleButton>
+        </Grid>
+    </ui:SplitView>
 </Window>

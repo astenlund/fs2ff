@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media;
 using fs2ff.FlightSim;
 using fs2ff.ForeFlight;
@@ -30,6 +31,7 @@ namespace fs2ff
             _flightSim.TrafficReceived += FlightSim_TrafficReceived;
 
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
+            DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
 
             UpdateState();
         }
@@ -45,6 +47,16 @@ namespace fs2ff
         }
 
         public string? ConnectButtonLabel { get; set; }
+
+        public bool DataAttitudeEnabled { get; set; } = true;
+
+        public bool DataPositionEnabled { get; set; } = true;
+
+        public bool DataTrafficEnabled { get; set; } = true;
+
+        public ICommand DismissSettingsPaneCommand { get; }
+
+        public bool SettingsPaneVisible { get; set; }
 
         public Brush? StateLabelColor { get; set; }
 
@@ -91,14 +103,22 @@ namespace fs2ff
 
         private void Disconnect() => _flightSim.Disconnect();
 
+        private void DismissSettingsPane() => SettingsPaneVisible = false;
+
         private async Task FlightSim_AttitudeReceived(Attitude att)
         {
-            await _foreFlight.Send(att).ConfigureAwait(false);
+            if (DataAttitudeEnabled)
+            {
+                await _foreFlight.Send(att).ConfigureAwait(false);
+            }
         }
 
         private async Task FlightSim_PositionReceived(Position pos)
         {
-            await _foreFlight.Send(pos).ConfigureAwait(false);
+            if (DataPositionEnabled)
+            {
+                await _foreFlight.Send(pos).ConfigureAwait(false);
+            }
         }
 
         private void FlightSim_StateChanged(bool failure)
@@ -109,7 +129,10 @@ namespace fs2ff
 
         private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
         {
-            await _foreFlight.Send(tfk, id).ConfigureAwait(false);
+            if (DataTrafficEnabled)
+            {
+                await _foreFlight.Send(tfk, id).ConfigureAwait(false);
+            }
         }
 
         private void ToggleConnect()
