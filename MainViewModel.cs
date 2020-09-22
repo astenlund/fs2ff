@@ -1,15 +1,14 @@
-﻿// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
-// ReSharper disable UnusedMember.Local
-
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using fs2ff.Annotations;
 using fs2ff.FlightSim;
 using fs2ff.ForeFlight;
 using fs2ff.Models;
+
+#pragma warning disable 67
+
+// ReSharper disable UnusedMember.Local
 
 namespace fs2ff
 {
@@ -31,6 +30,8 @@ namespace fs2ff
             _flightSim.TrafficReceived += FlightSim_TrafficReceived;
 
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
+
+            UpdateState();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -43,25 +44,11 @@ namespace fs2ff
             ErrorOccurred
         }
 
-        public string ConnectButtonLabel => Connected ? "Disconnect" : "Connect";
+        public string? ConnectButtonLabel { get; set; }
 
-        public Brush StateLabelColor =>
-            CurrentFlightSimState switch
-            {
-                FlightSimState.Connected      => Brushes.Goldenrod,
-                FlightSimState.Disconnected   => Brushes.DarkGray,
-                FlightSimState.ErrorOccurred  => Brushes.OrangeRed,
-                _                             => Brushes.DarkGray
-            };
+        public Brush? StateLabelColor { get; set; }
 
-        public string StateLabelText =>
-            CurrentFlightSimState switch
-            {
-                FlightSimState.Connected      => "CONNECTED",
-                FlightSimState.Disconnected   => "NOT CONNECTED",
-                FlightSimState.ErrorOccurred  => "Unable to connect to Flight Simulator",
-                _                             => ""
-            };
+        public string? StateLabelText { get; set; }
 
         public ActionCommand ToggleConnectCommand { get; }
 
@@ -98,12 +85,6 @@ namespace fs2ff
 
         public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
 
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
 
         private void Connect() => _flightSim.Connect(WindowHandle);
@@ -123,9 +104,7 @@ namespace fs2ff
         private void FlightSim_StateChanged(bool failure)
         {
             _errorOccurred = failure;
-            OnPropertyChanged(nameof(StateLabelText));
-            OnPropertyChanged(nameof(StateLabelColor));
-            OnPropertyChanged(nameof(ConnectButtonLabel));
+            UpdateState();
         }
 
         private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
@@ -137,6 +116,17 @@ namespace fs2ff
         {
             if (Connected) Disconnect();
             else              Connect();
+        }
+
+        private void UpdateState()
+        {
+            (ConnectButtonLabel, StateLabelColor, StateLabelText) = CurrentFlightSimState switch
+            {
+                FlightSimState.Connected      => ("Disconnect", Brushes.Goldenrod, "CONNECTED"),
+                FlightSimState.Disconnected   => ("Connect", Brushes.DarkGray, "NOT CONNECTED"),
+                FlightSimState.ErrorOccurred  => ("Connect", Brushes.OrangeRed, "UNABLE TO CONNECT"),
+                _                             => ("Connect", Brushes.DarkGray, "")
+            };
         }
     }
 }
