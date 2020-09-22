@@ -39,6 +39,7 @@
                     Content="DATA SELECTION"
                     Foreground="DarkGray"
                     FontFamily="Segoe UI"
+                    FontWeight="SemiBold"
                     Margin="0,5" />
                 <CheckBox
                     IsChecked="{Binding DataPositionEnabled, Mode=TwoWay}"
@@ -84,6 +85,7 @@
                 Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
                 FontFamily="Segoe UI"
                 FontSize="12"
+                FontWeight="SemiBold"
                 Padding="3"
                 Margin="15,10" />
             <ToggleButton
