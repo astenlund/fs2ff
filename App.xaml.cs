@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using fs2ff.FlightSim;
 using fs2ff.ForeFlight;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,15 @@ namespace fs2ff
                 .Build();
 
             ServiceProvider = host.Services;
+        }
+
+        public static string AssemblyVersion
+        {
+            get
+            {
+                var version = Assembly.GetEntryAssembly()!.GetName().Version!;
+                return $"v{version.Major}.{version.Minor}.{version.Build}";
+            }
         }
 
         public static IServiceProvider? ServiceProvider { get; private set; }

@@ -84,6 +84,8 @@ namespace fs2ff
             }
         }
 
+        public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.AssemblyVersion}";
+
         public void Dispose()
         {
             _flightSim.TrafficReceived -= FlightSim_TrafficReceived;

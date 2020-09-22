@@ -6,7 +6,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
-        Title="fs2ff (Flight Simulator -> ForeFlight)"
+        Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
         Width="525" Height="350"
         MinWidth="375" MinHeight="250"
