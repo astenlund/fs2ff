@@ -48,7 +48,7 @@ namespace fs2ff
         public Brush StateLabelColor =>
             CurrentFlightSimState switch
             {
-                FlightSimState.Connected      => Brushes.Gold,
+                FlightSimState.Connected      => Brushes.Goldenrod,
                 FlightSimState.Disconnected   => Brushes.DarkGray,
                 FlightSimState.ErrorOccurred  => Brushes.OrangeRed,
                 _                             => Brushes.DarkGray

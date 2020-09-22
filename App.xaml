@@ -17,7 +17,7 @@
                             <ResourceDictionary.MergedDictionaries>
                                 <ui:ColorPaletteResources
                                     TargetTheme="Dark"
-                                    Accent="Gold"
+                                    Accent="Goldenrod"
                                     AltHigh="#FF232323" />
                             </ResourceDictionary.MergedDictionaries>
                         </ResourceDictionary>
