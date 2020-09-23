@@ -11,7 +11,7 @@
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
         Width="525" Height="350"
-        MinWidth="400" MinHeight="200"
+        MinWidth="425" MinHeight="310"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
