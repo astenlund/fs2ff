@@ -19,6 +19,7 @@
         <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
     </Window.Resources>
     <ui:SplitView
+        FocusManager.FocusedElement="{Binding ElementName=ConnectButton}"
         Name="SettingsPane"
         IsPaneOpen="{Binding SettingsPaneVisible}"
         DisplayMode="Inline"
@@ -82,7 +83,7 @@
                     FontFamily="Segoe UI" />
             </StackPanel>
         </ui:SplitView.Pane>
-        <Grid FocusManager.FocusedElement="{Binding ElementName=ConnectButton}">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
