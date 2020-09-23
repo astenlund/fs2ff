@@ -19,10 +19,13 @@ namespace fs2ff
         private readonly FlightSimService _flightSim;
         private readonly ForeFlightService _foreFlight;
 
+        private bool _broadcastEnabled = Preferences.Default.broadcast_enabled;
+        private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
+        private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
+        private bool _dataTrafficEnabled = Preferences.Default.tfk_enabled;
         private bool _errorOccurred;
         private IntPtr _hwnd = IntPtr.Zero;
         private IPAddress? _ipAddress;
-        private bool _broadcastEnabled = true;
 
         public MainViewModel(ForeFlightService foreFlight, FlightSimService flightSim)
         {
@@ -35,6 +38,8 @@ namespace fs2ff
 
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
             DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
+
+            _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : IPAddress.Any;
 
             UpdateVisualState();
         }
@@ -59,6 +64,8 @@ namespace fs2ff
                 if (value != _broadcastEnabled)
                 {
                     _broadcastEnabled = value;
+                    Preferences.Default.broadcast_enabled = value;
+                    Preferences.Default.Save();
                     UpdateForeFlightConnection();
                 }
             }
@@ -66,11 +73,47 @@ namespace fs2ff
 
         public string? ConnectButtonLabel { get; set; }
 
-        public bool DataAttitudeEnabled { get; set; } = true;
+        public bool DataAttitudeEnabled
+        {
+            get => _dataAttitudeEnabled;
+            set
+            {
+                if (value != _dataAttitudeEnabled)
+                {
+                    _dataAttitudeEnabled = value;
+                    Preferences.Default.att_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
 
-        public bool DataPositionEnabled { get; set; } = true;
+        public bool DataPositionEnabled
+        {
+            get => _dataPositionEnabled;
+            set
+            {
+                if (value != _dataPositionEnabled)
+                {
+                    _dataPositionEnabled = value;
+                    Preferences.Default.pos_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
 
-        public bool DataTrafficEnabled { get; set; } = true;
+        public bool DataTrafficEnabled
+        {
+            get => _dataTrafficEnabled;
+            set
+            {
+                if (value != _dataTrafficEnabled)
+                {
+                    _dataTrafficEnabled = value;
+                    Preferences.Default.tfk_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
 
         public ICommand DismissSettingsPaneCommand { get; }
 
@@ -79,9 +122,11 @@ namespace fs2ff
             get => _ipAddress;
             set
             {
-                if (value != null && !value.Equals(_ipAddress))
+                if (!Equals(value, _ipAddress))
                 {
                     _ipAddress = value;
+                    Preferences.Default.ip_address = value?.ToString() ?? "";
+                    Preferences.Default.Save();
                     UpdateForeFlightConnection();
                 }
             }

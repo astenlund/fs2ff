@@ -43,4 +43,19 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Preferences.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Preferences.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Preferences.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Preferences.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
 </Project>
