@@ -13,19 +13,25 @@ namespace fs2ff.ForeFlight
         private const int Port = 49002;
         private const string SimId = "MSFS";
 
-        private readonly IPEndPoint _endPoint;
-        private readonly Socket _socket;
+        private IPEndPoint? _endPoint;
+        private Socket? _socket;
 
-        public ForeFlightService()
+        public void Connect(IPAddress? ip)
         {
-            _endPoint = new IPEndPoint(IPAddress.Broadcast, Port);
+            Disconnect();
+
+            ip ??= IPAddress.Broadcast;
+
+            _endPoint = new IPEndPoint(ip, Port);
             _socket = new Socket(_endPoint.Address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
             {
-                EnableBroadcast = true
+                EnableBroadcast = ip.Equals(IPAddress.Broadcast)
             };
         }
 
-        public void Dispose() => _socket.Dispose();
+        public void Disconnect() => _socket?.Dispose();
+
+        public void Dispose() => _socket?.Dispose();
 
         public async Task Send(Attitude a)
         {
@@ -55,10 +61,15 @@ namespace fs2ff.ForeFlight
             await Send(data).ConfigureAwait(false);
         }
 
-        private async Task Send(string data) =>
-            await _socket
-                .SendToAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(data)), SocketFlags.None, _endPoint)
-                .ConfigureAwait(false);
+        private async Task Send(string data)
+        {
+            if (_endPoint != null && _socket != null)
+            {
+                await _socket
+                    .SendToAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(data)), SocketFlags.None, _endPoint)
+                    .ConfigureAwait(false);
+            }
+        }
 
         private static string? TryGetFlightNumber(Traffic t) =>
             !string.IsNullOrEmpty(t.Airline) && !string.IsNullOrEmpty(t.FlightNumber)

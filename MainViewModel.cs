@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -20,6 +21,8 @@ namespace fs2ff
 
         private bool _errorOccurred;
         private IntPtr _hwnd = IntPtr.Zero;
+        private IPAddress? _ipAddress;
+        private bool _broadcastEnabled = true;
 
         public MainViewModel(ForeFlightService foreFlight, FlightSimService flightSim)
         {
@@ -33,7 +36,7 @@ namespace fs2ff
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
             DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
 
-            UpdateState();
+            UpdateVisualState();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -46,6 +49,21 @@ namespace fs2ff
             ErrorOccurred
         }
 
+        public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.AssemblyVersion}";
+
+        public bool BroadcastEnabled
+        {
+            get => _broadcastEnabled;
+            set
+            {
+                if (value != _broadcastEnabled)
+                {
+                    _broadcastEnabled = value;
+                    UpdateForeFlightConnection();
+                }
+            }
+        }
+
         public string? ConnectButtonLabel { get; set; }
 
         public bool DataAttitudeEnabled { get; set; } = true;
@@ -56,6 +74,19 @@ namespace fs2ff
 
         public ICommand DismissSettingsPaneCommand { get; }
 
+        public IPAddress? IpAddress
+        {
+            get => _ipAddress;
+            set
+            {
+                if (value != null && !value.Equals(_ipAddress))
+                {
+                    _ipAddress = value;
+                    UpdateForeFlightConnection();
+                }
+            }
+        }
+
         public bool SettingsPaneVisible { get; set; }
 
         public Brush? StateLabelColor { get; set; }
@@ -63,15 +94,6 @@ namespace fs2ff
         public string? StateLabelText { get; set; }
 
         public ActionCommand ToggleConnectCommand { get; }
-
-        private bool Connected => _flightSim.Connected;
-
-        private FlightSimState CurrentFlightSimState =>
-            _errorOccurred
-                ? FlightSimState.ErrorOccurred
-                : Connected
-                    ? FlightSimState.Connected
-                    : FlightSimState.Disconnected;
 
         public IntPtr WindowHandle
         {
@@ -83,7 +105,14 @@ namespace fs2ff
             }
         }
 
-        public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.AssemblyVersion}";
+        private bool Connected => _flightSim.Connected;
+
+        private FlightSimState CurrentFlightSimState =>
+            _errorOccurred
+                ? FlightSimState.ErrorOccurred
+                : Connected
+                    ? FlightSimState.Connected
+                    : FlightSimState.Disconnected;
 
         public void Dispose()
         {
@@ -108,23 +137,21 @@ namespace fs2ff
         private async Task FlightSim_AttitudeReceived(Attitude att)
         {
             if (DataAttitudeEnabled)
-            {
                 await _foreFlight.Send(att).ConfigureAwait(false);
-            }
         }
 
         private async Task FlightSim_PositionReceived(Position pos)
         {
             if (DataPositionEnabled)
-            {
                 await _foreFlight.Send(pos).ConfigureAwait(false);
-            }
         }
 
         private void FlightSim_StateChanged(bool failure)
         {
             _errorOccurred = failure;
-            UpdateState();
+
+            UpdateForeFlightConnection();
+            UpdateVisualState();
         }
 
         private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
@@ -141,7 +168,15 @@ namespace fs2ff
             else              Connect();
         }
 
-        private void UpdateState()
+        private void UpdateForeFlightConnection()
+        {
+            if (CurrentFlightSimState == FlightSimState.Connected)
+                _foreFlight.Connect(BroadcastEnabled ? IPAddress.Broadcast : IpAddress);
+            else
+                _foreFlight.Disconnect();
+        }
+
+        private void UpdateVisualState()
         {
             (ConnectButtonLabel, StateLabelColor, StateLabelText) = CurrentFlightSimState switch
             {

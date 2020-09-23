@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:converters="clr-namespace:fs2ff.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
@@ -13,11 +14,15 @@
         MinWidth="400" MinHeight="200"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <Window.Resources>
+        <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
+        <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
+    </Window.Resources>
     <ui:SplitView
         Name="SettingsPane"
         IsPaneOpen="{Binding SettingsPaneVisible}"
         DisplayMode="Inline"
-        OpenPaneLength="140"
+        OpenPaneLength="180"
         PanePlacement="Right">
         <i:Interaction.Triggers>
             <i:KeyTrigger Key="Escape">
@@ -34,13 +39,35 @@
         <ui:SplitView.Pane>
             <StackPanel
                 Orientation="Vertical"
-                Margin="15,10,0,0">
+                Margin="15,0,15,0">
+                <Label
+                    Content="NETWORK MODE"
+                    Foreground="DarkGray"
+                    FontFamily="Segoe UI"
+                    FontWeight="SemiBold"
+                    Margin="0,20,0,5" />
+                <CheckBox
+                    x:Name="BroadcastCheckBox"
+                    IsChecked="{Binding BroadcastEnabled, Mode=TwoWay}"
+                    Content="Broadcast"
+                    FontFamily="Segoe UI" />
+                <TextBox
+                    IsEnabled="{
+                        Binding IsChecked, ElementName=BroadcastCheckBox,
+                        Converter={StaticResource InvertedBooleanConverter},
+                        Mode=OneWay}"
+                    Text="{
+                        Binding IpAddress,
+                        Converter={StaticResource IpAddressToStringConverter},
+                        UpdateSourceTrigger=PropertyChanged, Delay=2000,
+                        Mode=TwoWay}"
+                    Margin="0,10,0,0" />
                 <Label
                     Content="DATA SELECTION"
                     Foreground="DarkGray"
                     FontFamily="Segoe UI"
                     FontWeight="SemiBold"
-                    Margin="0,5" />
+                    Margin="0,20,0,5" />
                 <CheckBox
                     IsChecked="{Binding DataPositionEnabled, Mode=TwoWay}"
                     Content="Position"
