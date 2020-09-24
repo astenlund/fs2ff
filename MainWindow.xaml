@@ -6,6 +6,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:behaviors="clr-namespace:fs2ff.Behaviors"
         xmlns:converters="clr-namespace:fs2ff.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
@@ -67,7 +68,11 @@
                         Mode=TwoWay}"
                     Template="{StaticResource WatermarkTextBoxTemplate}"
                     Tag="255.255.255.255"
-                    Margin="0,10,0,0" />
+                    Margin="0,10,0,0">
+                    <i:Interaction.Behaviors>
+                        <behaviors:MoveFocusOnEnterBehavior />
+                    </i:Interaction.Behaviors>
+                </TextBox>
                 <Label
                     Content="DATA SELECTION"
                     Foreground="DarkGray"
