@@ -22,7 +22,7 @@ __N.B.__ Since I have not bothered to create an installer for this app, you will
 
 The app uses Microsoft's SimConnect SDK to continuously collect data about the player's own aircraft in the game, as well as other traffic around the player, and then broadcast these data so they can be picked up by ForeFlight. This requires that the ForeFlight device is connected to the same Wi-Fi network as the Flight Sim computer. Also, UDP port 49002 must not be blocked by any firewalls.
 
-## Does it work other EFB apps?
+## Does it work with other EFB apps?
 
 ### SkyDemon
 
