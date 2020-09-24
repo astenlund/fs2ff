@@ -13,7 +13,7 @@
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
         Width="525" Height="350"
-        MinWidth="500" MinHeight="310"
+        MinWidth="500" MinHeight="300"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
@@ -21,14 +21,34 @@
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
         <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        </Style>
         <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
             <Setter Property="Focusable" Value="False" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
         <Style TargetType="Hyperlink" BasedOn="{StaticResource {x:Type Hyperlink}}">
             <Setter Property="Focusable" Value="False" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="DarkGray" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
         <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
             <Setter Property="Focusable" Value="False" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
     </Window.Resources>
     <ui:SplitView
@@ -59,15 +79,11 @@
                 Margin="15,0,15,0">
                 <Label
                     Content="NETWORK MODE"
-                    Foreground="DarkGray"
-                    FontFamily="Segoe UI"
-                    FontWeight="SemiBold"
                     Margin="0,20,0,5" />
                 <CheckBox
                     x:Name="BroadcastCheckBox"
                     IsChecked="{Binding BroadcastEnabled, Mode=TwoWay}"
-                    Content="Broadcast"
-                    FontFamily="Segoe UI" />
+                    Content="Broadcast" />
                 <TextBox
                     IsEnabled="{
                         Binding IsChecked, ElementName=BroadcastCheckBox, Mode=OneWay,
@@ -85,22 +101,16 @@
                 </TextBox>
                 <Label
                     Content="DATA SELECTION"
-                    Foreground="DarkGray"
-                    FontFamily="Segoe UI"
-                    FontWeight="SemiBold"
                     Margin="0,20,0,5" />
                 <CheckBox
                     IsChecked="{Binding DataPositionEnabled, Mode=TwoWay}"
-                    Content="Position"
-                    FontFamily="Segoe UI" />
+                    Content="Position" />
                 <CheckBox
                     IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
-                    Content="Attitude"
-                    FontFamily="Segoe UI" />
+                    Content="Attitude" />
                 <CheckBox
                     IsChecked="{Binding DataTrafficEnabled, Mode=TwoWay}"
-                    Content="Traffic"
-                    FontFamily="Segoe UI" />
+                    Content="Traffic" />
             </StackPanel>
         </ui:SplitView.Pane>
         <Grid>
@@ -114,10 +124,10 @@
                     Binding BroadcastHintVisible, Mode=OneWay,
                     Converter={StaticResource BooleanToVisibilityConverter},
                     ConverterParameter={x:Static Visibility.Collapsed}}"
-                HorizontalAlignment="Center" VerticalAlignment="Top"
-                Foreground="DarkGray"
-                FontFamily="Segoe UI" FontSize="12" FontWeight="SemiBold" FontStyle="Italic"
-                Padding="3" Margin="0,25,0,0">
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                FontStyle="Italic"
+                Margin="0,25,0,0">
                 <StackPanel Orientation="Vertical">
                     <TextBlock HorizontalAlignment="Center">
                         Hint: Disable Broadcast mode and enter
@@ -133,9 +143,9 @@
                 Name="ConnectButton"
                 Content="{Binding ConnectButtonLabel, FallbackValue='Connect'}"
                 Command="{Binding ToggleConnectCommand}"
+                FontSize="16"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                FontFamily="Segoe UI"
                 Width="144"
                 Height="60" />
             <Label
@@ -143,22 +153,16 @@
                 Content="{Binding StateLabelText, FallbackValue='NOT CONNECTED'}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
-                IsHitTestVisible="False"
                 Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
-                FontFamily="Segoe UI"
-                FontSize="12"
-                FontWeight="SemiBold"
-                Padding="3"
                 Margin="15,0,15,10" />
             <ToggleButton
                 Grid.Column="1"
                 IsChecked="{Binding SettingsPaneVisible, Mode=TwoWay}"
                 VerticalAlignment="Stretch"
-                FontFamily="Segoe UI"
                 Width="47">
                 <ToggleButton.ContentTemplate>
                     <DataTemplate>
-                        <Label Content="S   E   T   T   I   N   G   S">
+                        <Label Content="S   E   T   T   I   N   G   S" Foreground="White">
                             <Label.LayoutTransform>
                                 <TransformGroup>
                                     <RotateTransform x:Name="RotateTransform" Angle="90" />
