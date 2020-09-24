@@ -82,5 +82,17 @@ namespace fs2ff {
                 this["broadcast_enabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool broadcast_hint {
+            get {
+                return ((bool)(this["broadcast_hint"]));
+            }
+            set {
+                this["broadcast_hint"] = value;
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -9,8 +10,6 @@ using fs2ff.ForeFlight;
 using fs2ff.Models;
 
 #pragma warning disable 67
-
-// ReSharper disable UnusedMember.Local
 
 namespace fs2ff
 {
@@ -36,16 +35,18 @@ namespace fs2ff
             _flightSim.AttitudeReceived += FlightSim_AttitudeReceived;
             _flightSim.TrafficReceived += FlightSim_TrafficReceived;
 
-            ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
+            AcknowledgeBroadcastHintCommand = new ActionCommand(AcknowledgeBroadcastHint);
             DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
+            ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
 
-            _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : IPAddress.Any;
+            _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : null;
 
             UpdateVisualState();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Unknown is not supposed to be used")]
         private enum FlightSimState
         {
             Unknown,
@@ -55,6 +56,8 @@ namespace fs2ff
         }
 
         public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.AssemblyVersion}";
+
+        public ICommand AcknowledgeBroadcastHintCommand { get; }
 
         public bool BroadcastEnabled
         {
@@ -70,6 +73,8 @@ namespace fs2ff
                 }
             }
         }
+
+        public bool BroadcastHintVisible => PrefBroadcastHint && (BroadcastEnabled || IpAddress == null);
 
         public string? ConnectButtonLabel { get; set; }
 
@@ -159,6 +164,17 @@ namespace fs2ff
                     ? FlightSimState.Connected
                     : FlightSimState.Disconnected;
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local", Justification = "PropertyChanged.Fody needs this to be non-static")]
+        private bool PrefBroadcastHint
+        {
+            get => Preferences.Default.broadcast_hint;
+            set
+            {
+                Preferences.Default.broadcast_hint = value;
+                Preferences.Default.Save();
+            }
+        }
+
         public void Dispose()
         {
             _flightSim.TrafficReceived -= FlightSim_TrafficReceived;
@@ -170,6 +186,8 @@ namespace fs2ff
         }
 
         public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
+
+        private void AcknowledgeBroadcastHint() => PrefBroadcastHint = false;
 
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
 
@@ -202,9 +220,7 @@ namespace fs2ff
         private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
         {
             if (DataTrafficEnabled)
-            {
                 await _foreFlight.Send(tfk, id).ConfigureAwait(false);
-            }
         }
 
         private void ToggleConnect()
