@@ -58,9 +58,8 @@
                     FontFamily="Segoe UI" />
                 <TextBox
                     IsEnabled="{
-                        Binding IsChecked, ElementName=BroadcastCheckBox,
-                        Converter={StaticResource InvertedBooleanConverter},
-                        Mode=OneWay}"
+                        Binding IsChecked, ElementName=BroadcastCheckBox, Mode=OneWay,
+                        Converter={StaticResource InvertedBooleanConverter}}"
                     Text="{
                         Binding IpAddress, Mode=TwoWay,
                         Converter={StaticResource IpAddressToStringConverter},
@@ -99,7 +98,10 @@
             </Grid.ColumnDefinitions>
             <Label
                 Grid.Column="0"
-                Visibility="{Binding BroadcastHintVisible, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ConverterParameter={x:Static Visibility.Collapsed}}"
+                Visibility="{
+                    Binding BroadcastHintVisible, Mode=OneWay,
+                    Converter={StaticResource BooleanToVisibilityConverter},
+                    ConverterParameter={x:Static Visibility.Collapsed}}"
                 HorizontalAlignment="Center" VerticalAlignment="Top"
                 Foreground="DarkGray"
                 FontFamily="Segoe UI" FontSize="12" FontWeight="SemiBold" FontStyle="Italic"
