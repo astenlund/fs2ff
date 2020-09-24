@@ -49,7 +49,7 @@
         Name="SettingsPane"
         IsPaneOpen="{Binding SettingsPaneVisible}"
         DisplayMode="Inline"
-        OpenPaneLength="180"
+        OpenPaneLength="185"
         PanePlacement="Right">
         <i:Interaction.Triggers>
             <i:KeyTrigger Key="Escape">
