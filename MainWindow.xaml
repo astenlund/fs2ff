@@ -62,10 +62,9 @@
                         Converter={StaticResource InvertedBooleanConverter},
                         Mode=OneWay}"
                     Text="{
-                        Binding IpAddress,
+                        Binding IpAddress, Mode=TwoWay,
                         Converter={StaticResource IpAddressToStringConverter},
-                        UpdateSourceTrigger=PropertyChanged, Delay=2000,
-                        Mode=TwoWay}"
+                        UpdateSourceTrigger=LostFocus}"
                     Template="{StaticResource WatermarkTextBoxTemplate}"
                     Tag="255.255.255.255"
                     Margin="0,10,0,0">
