@@ -112,16 +112,11 @@
             </StackPanel>
         </ui:SplitView.Pane>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Label
-                Grid.Row="0"
                 Grid.Column="0"
                 Visibility="{Binding BroadcastHintVisible, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ConverterParameter={x:Static Visibility.Collapsed}}"
                 HorizontalAlignment="Center" VerticalAlignment="Top"
@@ -139,7 +134,6 @@
                 </StackPanel>
             </Label>
             <Button
-                Grid.Row="0"
                 Grid.Column="0"
                 Name="ConnectButton"
                 Content="{Binding ConnectButtonLabel, FallbackValue='Connect'}"
@@ -150,7 +144,6 @@
                 Width="144"
                 Height="60" />
             <Label
-                Grid.Row="1"
                 Grid.Column="0"
                 Content="{Binding StateLabelText, FallbackValue='NOT CONNECTED'}"
                 HorizontalAlignment="Left"
@@ -161,11 +154,9 @@
                 FontSize="12"
                 FontWeight="SemiBold"
                 Padding="3"
-                Margin="15,10" />
+                Margin="15,0,15,10" />
             <ToggleButton
-                Grid.Row="0"
                 Grid.Column="1"
-                Grid.RowSpan="2"
                 IsChecked="{Binding SettingsPaneVisible, Mode=TwoWay}"
                 VerticalAlignment="Stretch"
                 FontFamily="Segoe UI"
