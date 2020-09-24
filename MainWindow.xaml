@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:converters="clr-namespace:fs2ff.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
@@ -15,6 +16,7 @@
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
+        <converters:BooleanToObjectConverter x:Key="BooleanToObjectConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
         <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
@@ -141,10 +143,36 @@
                         <Label Content="S   E   T   T   I   N   G   S">
                             <Label.LayoutTransform>
                                 <TransformGroup>
-                                    <RotateTransform Angle="90" />
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    <RotateTransform x:Name="RotateTransform" Angle="90" />
                                 </TransformGroup>
                             </Label.LayoutTransform>
+                            <i:Interaction.Triggers>
+                                <i:PropertyChangedTrigger Binding="{
+                                    Binding IsPaneOpen,
+                                    RelativeSource={
+                                        RelativeSource FindAncestor,
+                                        AncestorType=ui:SplitView}}">
+                                    <i:ChangePropertyAction
+                                        TargetName="RotateTransform"
+                                        PropertyName="Angle">
+                                        <i:ChangePropertyAction.Value>
+                                            <Binding
+                                                Path="IsPaneOpen"
+                                                RelativeSource="{
+                                                    RelativeSource FindAncestor,
+                                                    AncestorType=ui:SplitView}"
+                                                Converter="{StaticResource BooleanToObjectConverter}">
+                                                <Binding.ConverterParameter>
+                                                    <x:Array x:Type="{x:Type system:Int32}">
+                                                        <system:Int32>270</system:Int32>
+                                                        <system:Int32>90</system:Int32>
+                                                    </x:Array>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </i:ChangePropertyAction.Value>
+                                    </i:ChangePropertyAction>
+                                </i:PropertyChangedTrigger>
+                            </i:Interaction.Triggers>
                         </Label>
                     </DataTemplate>
                 </ToggleButton.ContentTemplate>
