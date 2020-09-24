@@ -5,6 +5,11 @@ root = true
 [Annotations.cs]
 dotnet_diagnostic.CS8618.severity = none
 
+# All files
+[*.*]
+
+max_line_length=160
+
 # C# files
 [*.cs]
 
@@ -17,7 +22,7 @@ tab_width = 4
 
 # New line preferences
 end_of_line = crlf
-insert_final_newline = false
+insert_final_newline = true
 
 #### .NET Coding Conventions ####
 
