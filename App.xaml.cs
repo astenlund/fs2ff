@@ -21,14 +21,10 @@ namespace fs2ff
             ServiceProvider = host.Services;
         }
 
-        public static string AssemblyVersion
-        {
-            get
-            {
-                var version = Assembly.GetEntryAssembly()!.GetName().Version!;
-                return $"v{version.Major}.{version.Minor}.{version.Build}";
-            }
-        }
+        public static string AssemblyVersion => "v" + Assembly
+            .GetEntryAssembly()?
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion ?? "";
 
         public static IServiceProvider? ServiceProvider { get; private set; }
 
