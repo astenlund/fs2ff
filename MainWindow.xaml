@@ -24,7 +24,6 @@
     </Window.Resources>
     <ui:SplitView
         FocusManager.FocusedElement="{Binding ElementName=ConnectButton}"
-        Name="SettingsPane"
         IsPaneOpen="{Binding SettingsPaneVisible}"
         DisplayMode="Inline"
         OpenPaneLength="185"
@@ -34,7 +33,11 @@
                 <i:Interaction.Behaviors>
                     <i:ConditionBehavior>
                         <i:ConditionalExpression>
-                            <i:ComparisonCondition LeftOperand="{Binding IsPaneOpen, ElementName=SettingsPane}" RightOperand="True" />
+                            <i:ComparisonCondition
+                                LeftOperand="{
+                                    Binding IsPaneOpen,
+                                    RelativeSource={RelativeSource FindAncestor, AncestorType=ui:SplitView}}"
+                                RightOperand="True" />
                         </i:ConditionalExpression>
                     </i:ConditionBehavior>
                 </i:Interaction.Behaviors>
