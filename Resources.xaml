@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ControlTemplate TargetType="TextBox" x:Key="WatermarkTextBoxTemplate">
+        <Grid>
+            <TextBox Text="{
+                    Binding Text, Mode=TwoWay,
+                    RelativeSource={RelativeSource TemplatedParent},
+                    UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Text="{Binding Tag, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                Margin="10,0"
+                Foreground="#FF808080"
+                FontStyle="Italic"
+                IsHitTestVisible="False"
+                x:Name="Watermark"
+                Visibility="Hidden" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <MultiTrigger>
+                <Setter Property="Visibility" TargetName="Watermark" Value="Visible" />
+                <MultiTrigger.Conditions>
+                    <Condition Property="Text" Value="" />
+                </MultiTrigger.Conditions>
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+</ResourceDictionary>

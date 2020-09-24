@@ -18,31 +18,6 @@
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
         <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
-        <ControlTemplate TargetType="TextBox" x:Key="WatermarkTextBoxTemplate">
-            <Grid>
-                <TextBox Text="{
-                    Binding Text, RelativeSource={RelativeSource TemplatedParent},
-                    Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                    Margin="10,0"
-                    Foreground="#FF808080"
-                    FontStyle="Italic"
-                    IsHitTestVisible="False"
-                    x:Name="Watermark"
-                    Visibility="Hidden" />
-            </Grid>
-            <ControlTemplate.Triggers>
-                <MultiTrigger>
-                    <Setter Property="Visibility" TargetName="Watermark" Value="Visible" />
-                    <MultiTrigger.Conditions>
-                        <Condition Property="Text" Value="" />
-                    </MultiTrigger.Conditions>
-                </MultiTrigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
     </Window.Resources>
     <ui:SplitView
         FocusManager.FocusedElement="{Binding ElementName=ConnectButton}"

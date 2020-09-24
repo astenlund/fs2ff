@@ -11,6 +11,7 @@
         <ResourceDictionary x:Key="Resources">
             <local:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml" />
                 <ui:ThemeResources RequestedTheme="Dark">
                     <ui:ThemeResources.ThemeDictionaries>
                         <ResourceDictionary x:Key="Dark">
