@@ -162,12 +162,10 @@ namespace fs2ff
             }
         }
 
-        private bool Connected => _flightSim.Connected;
-
         private FlightSimState CurrentFlightSimState =>
             _errorOccurred
                 ? FlightSimState.ErrorOccurred
-                : Connected
+                : _flightSim.Connected
                     ? FlightSimState.Connected
                     : FlightSimState.Disconnected;
 
@@ -253,8 +251,8 @@ namespace fs2ff
 
         private void ToggleConnect()
         {
-            if (Connected) Disconnect();
-            else              Connect();
+            if (_flightSim.Connected) Disconnect();
+            else                         Connect();
         }
 
         private void UpdateForeFlightConnection()
