@@ -123,7 +123,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 FontStyle="Italic"
-                Margin="0,25,0,0">
+                Margin="0,30,0,0">
                 <StackPanel Orientation="Vertical">
                     <TextBlock HorizontalAlignment="Center">
                         Hint: Disable Broadcast mode and enter
