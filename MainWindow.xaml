@@ -11,8 +11,8 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="525" Height="350"
-        MinWidth="500" MinHeight="300"
+        Width="520" Height="350"
+        MinWidth="520" MinHeight="300"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
@@ -113,11 +113,16 @@
             </StackPanel>
         </ui:SplitView.Pane>
         <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Label
+                Grid.Row="0"
                 Grid.Column="0"
                 Visibility="{Binding BroadcastHintVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 HorizontalAlignment="Center"
@@ -135,7 +140,9 @@
                 </StackPanel>
             </Label>
             <Button
+                Grid.Row="0"
                 Grid.Column="0"
+                Grid.RowSpan="2"
                 Name="ConnectButton"
                 Content="{Binding ConnectButtonText, FallbackValue='Connect'}"
                 Command="{Binding ToggleConnectCommand}"
@@ -144,24 +151,58 @@
                 VerticalAlignment="Center"
                 Width="144"
                 Height="60" />
-            <Label
+            <Ellipse
+                Grid.Row="1"
                 Grid.Column="0"
-                Content="{Binding StateLabelText, FallbackValue='NOT CONNECTED'}"
+                Fill="LawnGreen"
+                Stroke="ForestGreen"
+                StrokeThickness="1"
+                Width="10" Height="10"
+                VerticalAlignment="Center"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
-                Margin="15,0,15,10" />
+                Visibility="{Binding IndicatorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="25,0,0,0" />
             <Label
+                Grid.Row="1"
                 Grid.Column="0"
-                Visibility="{Binding UpdateMsgVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                VerticalAlignment="Bottom"
+                Content="NOT"
+                Foreground="DarkGray"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Visibility="{Binding NotLabelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="15,0,0,0" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="CONNECTED"
+                Foreground="DarkGray"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Visibility="{Binding ConnectedLabelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="43,0,0,0" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="UNABLE TO CONNECT TO FLIGHT SIMULATOR"
+                Foreground="OrangeRed"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Visibility="{Binding ErrorLabelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Margin="15,0,0,0" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Visibility="{Binding UpdateMsgVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 FontStyle="Italic"
-                Margin="15,0,15,10">
+                Margin="15,0,15,0">
                 <Hyperlink Command="{Binding GotoNewReleaseCommand}">Update available</Hyperlink>
             </Label>
             <ToggleButton
+                Grid.Row="0"
                 Grid.Column="1"
+                Grid.RowSpan="2"
                 IsChecked="{Binding SettingsPaneVisible, Mode=TwoWay}"
                 VerticalAlignment="Stretch"
                 Width="47">

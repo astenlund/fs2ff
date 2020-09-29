@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
 using fs2ff.FlightSim;
 using fs2ff.ForeFlight;
 using fs2ff.Models;
@@ -81,6 +80,8 @@ namespace fs2ff
 
         public string? ConnectButtonText { get; private set; }
 
+        public bool ConnectedLabelVisible { get; private set; }
+
         public bool DataAttitudeEnabled
         {
             get => _dataAttitudeEnabled;
@@ -125,7 +126,11 @@ namespace fs2ff
 
         public ICommand DismissSettingsPaneCommand { get; }
 
+        public bool ErrorLabelVisible { get; private set; }
+
         public ICommand GotoNewReleaseCommand { get; }
+
+        public bool IndicatorVisible { get; private set; }
 
         public IPAddress? IpAddress
         {
@@ -142,11 +147,9 @@ namespace fs2ff
             }
         }
 
+        public bool NotLabelVisible { get; private set; }
+
         public bool SettingsPaneVisible { get; set; }
-
-        public Brush? StateLabelColor { get; set; }
-
-        public string? StateLabelText { get; set; }
 
         public ActionCommand ToggleConnectCommand { get; }
 
@@ -269,12 +272,12 @@ namespace fs2ff
 
         private void UpdateVisualState()
         {
-            (ConnectButtonText, StateLabelColor, StateLabelText) = CurrentFlightSimState switch
+            (IndicatorVisible, NotLabelVisible, ErrorLabelVisible, ConnectedLabelVisible, ConnectButtonText) = CurrentFlightSimState switch
             {
-                FlightSimState.Connected      => ("Disconnect", Brushes.Goldenrod, "CONNECTED"),
-                FlightSimState.Disconnected   => ("Connect", Brushes.DarkGray, "NOT CONNECTED"),
-                FlightSimState.ErrorOccurred  => ("Connect", Brushes.OrangeRed, "UNABLE TO CONNECT"),
-                _                             => ("Connect", Brushes.DarkGray, "")
+                FlightSimState.Connected     => (true, false, false, true, "Disconnect"),
+                FlightSimState.Disconnected  => (false, true, false, true, "Connect"),
+                FlightSimState.ErrorOccurred => (false, false, true, false, "Connect"),
+                _                            => (false, true, false, true, "Connect")
             };
         }
     }
