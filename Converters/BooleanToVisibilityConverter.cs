@@ -18,7 +18,9 @@ namespace fs2ff.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is Visibility vis && vis == Visibility.Visible;
+            return value is Visibility vis
+                ? vis == Visibility.Visible
+                : Binding.DoNothing;
         }
     }
 }
