@@ -77,7 +77,7 @@ namespace fs2ff
             }
         }
 
-        public bool BroadcastHintVisible => PrefBroadcastHint && (BroadcastEnabled || IpAddress == null);
+        public bool BroadcastHintVisible => !PrefSuppressBroadcastHint && (BroadcastEnabled || IpAddress == null);
 
         public string? ConnectButtonLabel { get; set; }
 
@@ -172,12 +172,12 @@ namespace fs2ff
                     : FlightSimState.Disconnected;
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local", Justification = "PropertyChanged.Fody needs this to be non-static")]
-        private bool PrefBroadcastHint
+        private bool PrefSuppressBroadcastHint
         {
-            get => Preferences.Default.broadcast_hint;
+            get => Preferences.Default.suppress_broadcast_hint;
             set
             {
-                Preferences.Default.broadcast_hint = value;
+                Preferences.Default.suppress_broadcast_hint = value;
                 Preferences.Default.Save();
             }
         }
@@ -196,7 +196,7 @@ namespace fs2ff
 
         public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
 
-        private void AcknowledgeBroadcastHint() => PrefBroadcastHint = false;
+        private void AcknowledgeBroadcastHint() => PrefSuppressBroadcastHint = true;
 
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
 

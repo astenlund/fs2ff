@@ -85,13 +85,13 @@ namespace fs2ff {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool broadcast_hint {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool suppress_broadcast_hint {
             get {
-                return ((bool)(this["broadcast_hint"]));
+                return ((bool)(this["suppress_broadcast_hint"]));
             }
             set {
-                this["broadcast_hint"] = value;
+                this["suppress_broadcast_hint"] = value;
             }
         }
     }
