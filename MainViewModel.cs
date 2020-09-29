@@ -214,13 +214,17 @@ namespace fs2ff
         private async Task FlightSim_AttitudeReceived(Attitude att)
         {
             if (DataAttitudeEnabled)
+            {
                 await _foreFlight.Send(att).ConfigureAwait(false);
+            }
         }
 
         private async Task FlightSim_PositionReceived(Position pos)
         {
             if (DataPositionEnabled)
+            {
                 await _foreFlight.Send(pos).ConfigureAwait(false);
+            }
         }
 
         private void FlightSim_StateChanged(bool failure)
@@ -234,7 +238,9 @@ namespace fs2ff
         private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
         {
             if (DataTrafficEnabled)
+            {
                 await _foreFlight.Send(tfk, id).ConfigureAwait(false);
+            }
         }
 
         private void GotoReleaseNotesPage()
@@ -254,9 +260,13 @@ namespace fs2ff
         private void UpdateForeFlightConnection()
         {
             if (CurrentFlightSimState == FlightSimState.Connected)
+            {
                 _foreFlight.Connect(BroadcastEnabled ? IPAddress.Broadcast : IpAddress);
+            }
             else
+            {
                 _foreFlight.Disconnect();
+            }
         }
 
         private void UpdateVisualState()
