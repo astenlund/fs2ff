@@ -1,25 +1,25 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Data;
 
 namespace fs2ff.Converters
 {
-    public class BooleanToObjectConverter : IValueConverter
+    public class BooleanToIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool val))
                 throw new InvalidOperationException($"{nameof(value)} must be a {nameof(Boolean)}");
 
-            if (!(parameter is Array objs))
-                throw new InvalidOperationException($"{nameof(parameter)} must be an array");
+            var ints = parameter.ToString()?.Split(',').Select(int.Parse).ToArray() ?? new int[0];
 
-            if (objs.Length != 2)
-                throw new InvalidOperationException($"{nameof(parameter)} array must contain exactly two items");
+            if (ints.Length != 2)
+                throw new InvalidOperationException($"{nameof(parameter)} must be two comma-separated integer values");
 
             return val
-                ? objs.GetValue(0)!
-                : objs.GetValue(1)!;
+                ? ints[0]
+                : ints[1];
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

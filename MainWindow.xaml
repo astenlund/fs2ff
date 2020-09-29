@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:behaviors="clr-namespace:fs2ff.Behaviors"
         xmlns:converters="clr-namespace:fs2ff.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
@@ -17,7 +16,7 @@
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
-        <converters:BooleanToObjectConverter x:Key="BooleanToObjectConverter" />
+        <converters:BooleanToIntConverter x:Key="BooleanToIntConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
         <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
@@ -189,14 +188,8 @@
                                                 RelativeSource="{
                                                     RelativeSource FindAncestor,
                                                     AncestorType=ui:SplitView}"
-                                                Converter="{StaticResource BooleanToObjectConverter}">
-                                                <Binding.ConverterParameter>
-                                                    <x:Array x:Type="{x:Type system:Int32}">
-                                                        <system:Int32>270</system:Int32>
-                                                        <system:Int32>90</system:Int32>
-                                                    </x:Array>
-                                                </Binding.ConverterParameter>
-                                            </Binding>
+                                                Converter="{StaticResource BooleanToIntConverter}"
+                                                ConverterParameter="270,90" />
                                         </i:ChangePropertyAction.Value>
                                     </i:ChangePropertyAction>
                                 </i:PropertyChangedTrigger>
