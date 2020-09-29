@@ -120,10 +120,7 @@
             </Grid.ColumnDefinitions>
             <Label
                 Grid.Column="0"
-                Visibility="{
-                    Binding BroadcastHintVisible, Mode=OneWay,
-                    Converter={StaticResource BooleanToVisibilityConverter},
-                    ConverterParameter={x:Static Visibility.Collapsed}}"
+                Visibility="{Binding BroadcastHintVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 FontStyle="Italic"
@@ -157,10 +154,7 @@
                 Margin="15,0,15,10" />
             <Label
                 Grid.Column="0"
-                Visibility="{
-                    Binding UpdateMsgVisible, Mode=OneWay,
-                    Converter={StaticResource BooleanToVisibilityConverter},
-                    ConverterParameter={x:Static Visibility.Collapsed}}"
+                Visibility="{Binding UpdateMsgVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
                 FontStyle="Italic"

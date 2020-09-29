@@ -13,7 +13,7 @@ namespace fs2ff.Converters
                 ? Visibility.Visible
                 : parameter is Visibility vis
                     ? vis
-                    : Visibility.Hidden;
+                    : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
