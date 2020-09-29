@@ -79,7 +79,7 @@ namespace fs2ff
 
         public bool BroadcastHintVisible => !PrefSuppressBroadcastHint && (BroadcastEnabled || IpAddress == null);
 
-        public string? ConnectButtonText { get; set; }
+        public string? ConnectButtonText { get; private set; }
 
         public bool DataAttitudeEnabled
         {
