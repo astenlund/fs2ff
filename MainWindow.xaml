@@ -137,7 +137,7 @@
             <Button
                 Grid.Column="0"
                 Name="ConnectButton"
-                Content="{Binding ConnectButtonLabel, FallbackValue='Connect'}"
+                Content="{Binding ConnectButtonText, FallbackValue='Connect'}"
                 Command="{Binding ToggleConnectCommand}"
                 FontSize="16"
                 HorizontalAlignment="Center"

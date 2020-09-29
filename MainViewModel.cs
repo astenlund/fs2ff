@@ -79,7 +79,7 @@ namespace fs2ff
 
         public bool BroadcastHintVisible => !PrefSuppressBroadcastHint && (BroadcastEnabled || IpAddress == null);
 
-        public string? ConnectButtonLabel { get; set; }
+        public string? ConnectButtonText { get; set; }
 
         public bool DataAttitudeEnabled
         {
@@ -261,7 +261,7 @@ namespace fs2ff
 
         private void UpdateVisualState()
         {
-            (ConnectButtonLabel, StateLabelColor, StateLabelText) = CurrentFlightSimState switch
+            (ConnectButtonText, StateLabelColor, StateLabelText) = CurrentFlightSimState switch
             {
                 FlightSimState.Connected      => ("Disconnect", Brushes.Goldenrod, "CONNECTED"),
                 FlightSimState.Disconnected   => ("Connect", Brushes.DarkGray, "NOT CONNECTED"),
