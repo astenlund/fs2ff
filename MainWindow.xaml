@@ -155,6 +155,18 @@
                 VerticalAlignment="Bottom"
                 Foreground="{Binding StateLabelColor, FallbackValue='DarkGray'}"
                 Margin="15,0,15,10" />
+            <Label
+                Grid.Column="0"
+                Visibility="{
+                    Binding UpdateMsgVisible, Mode=OneWay,
+                    Converter={StaticResource BooleanToVisibilityConverter},
+                    ConverterParameter={x:Static Visibility.Collapsed}}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
+                FontStyle="Italic"
+                Margin="15,0,15,10">
+                <Hyperlink Command="{Binding GotoNewReleaseCommand}">Update available</Hyperlink>
+            </Label>
             <ToggleButton
                 Grid.Column="1"
                 IsChecked="{Binding SettingsPaneVisible, Mode=TwoWay}"

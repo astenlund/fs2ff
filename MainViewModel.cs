@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
@@ -37,10 +38,12 @@ namespace fs2ff
 
             AcknowledgeBroadcastHintCommand = new ActionCommand(AcknowledgeBroadcastHint);
             DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
+            GotoNewReleaseCommand = new ActionCommand(GotoReleaseNotesPage);
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
 
             _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : null;
 
+            CheckForUpdates();
             UpdateVisualState();
         }
 
@@ -55,7 +58,7 @@ namespace fs2ff
             ErrorOccurred
         }
 
-        public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.AssemblyVersion}";
+        public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.InformationalVersion}";
 
         public ICommand AcknowledgeBroadcastHintCommand { get; }
 
@@ -122,6 +125,8 @@ namespace fs2ff
 
         public ICommand DismissSettingsPaneCommand { get; }
 
+        public ICommand GotoNewReleaseCommand { get; }
+
         public IPAddress? IpAddress
         {
             get => _ipAddress;
@@ -144,6 +149,8 @@ namespace fs2ff
         public string? StateLabelText { get; set; }
 
         public ActionCommand ToggleConnectCommand { get; }
+
+        public bool UpdateMsgVisible => UpdateInfo != null && !SettingsPaneVisible;
 
         public IntPtr WindowHandle
         {
@@ -175,6 +182,8 @@ namespace fs2ff
             }
         }
 
+        private UpdateInformation? UpdateInfo { get; set; }
+
         public void Dispose()
         {
             _flightSim.TrafficReceived -= FlightSim_TrafficReceived;
@@ -190,6 +199,11 @@ namespace fs2ff
         private void AcknowledgeBroadcastHint() => PrefBroadcastHint = false;
 
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
+
+        private void CheckForUpdates()
+        {
+            UpdateChecker.Check().ContinueWith(task => UpdateInfo = task.Result, TaskScheduler.FromCurrentSynchronizationContext());
+        }
 
         private void Connect() => _flightSim.Connect(WindowHandle);
 
@@ -221,6 +235,14 @@ namespace fs2ff
         {
             if (DataTrafficEnabled)
                 await _foreFlight.Send(tfk, id).ConfigureAwait(false);
+        }
+
+        private void GotoReleaseNotesPage()
+        {
+            if (UpdateInfo != null)
+            {
+                Process.Start("explorer.exe", UpdateInfo.DownloadLink.ToString());
+            }
         }
 
         private void ToggleConnect()

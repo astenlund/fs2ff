@@ -21,7 +21,9 @@ namespace fs2ff
             ServiceProvider = host.Services;
         }
 
-        public static string AssemblyVersion => "v" + Assembly
+        public static Version AssemblyVersion => Assembly.GetEntryAssembly()!.GetName().Version!;
+
+        public static string InformationalVersion => "v" + Assembly
             .GetEntryAssembly()?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion ?? "";
