@@ -58,7 +58,7 @@ namespace fs2ff
             ErrorOccurred
         }
 
-        public static string WindowTitle => $"fs2ff (Flight Simulator -> ForeFlight) {App.InformationalVersion}";
+        public static string WindowTitle => $"fs2ff - {App.InformationalVersion}";
 
         public ICommand AcknowledgeBroadcastHintCommand { get; }
 
