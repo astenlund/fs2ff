@@ -26,7 +26,11 @@ The app uses Microsoft's SimConnect SDK to continuously collect data about the p
 
 ### SkyDemon
 
-Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will need to enable the X-Plane toggle in the Third Party Devices settings pane under the cogwheel in SkyDemon. Then, when you start flying, select "Use X-Plane".
+Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will need to enable the "X-Plane" toggle in the "Third Party Devices" settings pane under the cogwheel in SkyDemon. Then, when you start flying, select "Use X-Plane".
+
+### Garmin Pilot
+
+Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulator Data" option.
 
 ### Other apps
 
