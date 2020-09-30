@@ -36,7 +36,7 @@ namespace fs2ff.ForeFlight
         public async Task Send(Attitude a)
         {
             var data = string.Format(CultureInfo.InvariantCulture,
-                "XATT{0},{1:0.#},{2:0.#},{3:0.#}",
+                "XATT{0},{1:0.#},{2:0.#},{3:0.#},,,,,,,,,", // Garmin Pilot requires 13 fields
                 SimId, a.TrueHeading, -a.Pitch, -a.Bank);
 
             await Send(data).ConfigureAwait(false);
