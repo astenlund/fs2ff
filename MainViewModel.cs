@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using fs2ff.FlightSim;
-using fs2ff.ForeFlight;
 using fs2ff.Models;
 
 #pragma warning disable 67
@@ -15,8 +14,8 @@ namespace fs2ff
 {
     public class MainViewModel : INotifyPropertyChanged, IFlightSimMessageHandler
     {
-        private readonly FlightSimService _flightSim;
-        private readonly ForeFlightService _foreFlight;
+        private readonly FlightSimAdapter _flightSim;
+        private readonly NetworkAdapter _network;
 
         private bool _broadcastEnabled = Preferences.Default.broadcast_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
@@ -26,9 +25,9 @@ namespace fs2ff
         private IntPtr _hwnd = IntPtr.Zero;
         private IPAddress? _ipAddress;
 
-        public MainViewModel(ForeFlightService foreFlight, FlightSimService flightSim)
+        public MainViewModel(NetworkAdapter network, FlightSimAdapter flightSim)
         {
-            _foreFlight = foreFlight;
+            _network = network;
             _flightSim = flightSim;
             _flightSim.StateChanged += FlightSim_StateChanged;
             _flightSim.PositionReceived += FlightSim_PositionReceived;
@@ -71,7 +70,7 @@ namespace fs2ff
                     _broadcastEnabled = value;
                     Preferences.Default.broadcast_enabled = value;
                     Preferences.Default.Save();
-                    UpdateForeFlightConnection();
+                    ResetNetwork();
                 }
             }
         }
@@ -142,7 +141,7 @@ namespace fs2ff
                     _ipAddress = value;
                     Preferences.Default.ip_address = value?.ToString() ?? "";
                     Preferences.Default.Save();
-                    UpdateForeFlightConnection();
+                    ResetNetwork();
                 }
             }
         }
@@ -192,7 +191,7 @@ namespace fs2ff
             _flightSim.PositionReceived -= FlightSim_PositionReceived;
             _flightSim.StateChanged -= FlightSim_StateChanged;
             _flightSim.Dispose();
-            _foreFlight.Dispose();
+            _network.Dispose();
         }
 
         public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
@@ -216,7 +215,7 @@ namespace fs2ff
         {
             if (DataAttitudeEnabled)
             {
-                await _foreFlight.Send(att).ConfigureAwait(false);
+                await _network.Send(att).ConfigureAwait(false);
             }
         }
 
@@ -224,7 +223,7 @@ namespace fs2ff
         {
             if (DataPositionEnabled)
             {
-                await _foreFlight.Send(pos).ConfigureAwait(false);
+                await _network.Send(pos).ConfigureAwait(false);
             }
         }
 
@@ -232,7 +231,7 @@ namespace fs2ff
         {
             _errorOccurred = failure;
 
-            UpdateForeFlightConnection();
+            ResetNetwork();
             UpdateVisualState();
         }
 
@@ -240,7 +239,7 @@ namespace fs2ff
         {
             if (DataTrafficEnabled)
             {
-                await _foreFlight.Send(tfk, id).ConfigureAwait(false);
+                await _network.Send(tfk, id).ConfigureAwait(false);
             }
         }
 
@@ -252,22 +251,22 @@ namespace fs2ff
             }
         }
 
+        private void ResetNetwork()
+        {
+            if (CurrentFlightSimState == FlightSimState.Connected)
+            {
+                _network.Connect(BroadcastEnabled ? IPAddress.Broadcast : IpAddress);
+            }
+            else
+            {
+                _network.Disconnect();
+            }
+        }
+
         private void ToggleConnect()
         {
             if (_flightSim.Connected) Disconnect();
             else                         Connect();
-        }
-
-        private void UpdateForeFlightConnection()
-        {
-            if (CurrentFlightSimState == FlightSimState.Connected)
-            {
-                _foreFlight.Connect(BroadcastEnabled ? IPAddress.Broadcast : IpAddress);
-            }
-            else
-            {
-                _foreFlight.Disconnect();
-            }
         }
 
         private void UpdateVisualState()

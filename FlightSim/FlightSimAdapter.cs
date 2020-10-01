@@ -9,7 +9,7 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace fs2ff.FlightSim
 {
-    public class FlightSimService : IDisposable
+    public class FlightSimAdapter : IDisposable
     {
         private const string AppName = "fs2ff";
         private const uint WM_USER_SIMCONNECT = 0x0402;

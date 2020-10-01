@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using fs2ff.Models;
 
-namespace fs2ff.ForeFlight
+namespace fs2ff
 {
-    public class ForeFlightService : IDisposable
+    public class NetworkAdapter : IDisposable
     {
         private const int Port = 49002;
         private const string SimId = "MSFS";
