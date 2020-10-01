@@ -50,6 +50,9 @@
             <Setter Property="FontSize" Value="12" />
         </Style>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="Tab" Command="{Binding ToggleSettingsPaneCommand}" />
+    </Window.InputBindings>
     <ui:SplitView
         FocusManager.FocusedElement="{Binding ElementName=ConnectButton}"
         IsPaneOpen="{Binding SettingsPaneVisible}"

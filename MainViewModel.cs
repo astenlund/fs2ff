@@ -38,6 +38,7 @@ namespace fs2ff
             DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
             GotoNewReleaseCommand = new ActionCommand(GotoReleaseNotesPage);
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
+            ToggleSettingsPaneCommand = new ActionCommand(ToggleSettingsPane);
 
             _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : null;
 
@@ -151,6 +152,8 @@ namespace fs2ff
         public bool SettingsPaneVisible { get; set; }
 
         public ActionCommand ToggleConnectCommand { get; }
+
+        public ICommand ToggleSettingsPaneCommand { get; }
 
         public bool UpdateMsgVisible => UpdateInfo != null && !SettingsPaneVisible;
 
@@ -268,6 +271,8 @@ namespace fs2ff
             if (_flightSim.Connected) Disconnect();
             else                         Connect();
         }
+
+        private void ToggleSettingsPane() => SettingsPaneVisible = !SettingsPaneVisible;
 
         private void UpdateVisualState()
         {
