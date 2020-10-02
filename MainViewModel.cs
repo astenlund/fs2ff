@@ -17,6 +17,7 @@ namespace fs2ff
         private readonly FlightSimAdapter _flightSim;
         private readonly NetworkAdapter _network;
 
+        private uint _attitudeFrequency = Preferences.Default.att_freq.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
         private bool _broadcastEnabled = Preferences.Default.broadcast_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
         private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
@@ -60,6 +61,22 @@ namespace fs2ff
         public static string WindowTitle => $"fs2ff - {App.InformationalVersion}";
 
         public ICommand AcknowledgeBroadcastHintCommand { get; }
+
+        public uint AttitudeFrequency
+        {
+            get => _attitudeFrequency;
+            set
+            {
+                _attitudeFrequency = value.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
+                _flightSim.SetAttitudeFrequency(_attitudeFrequency);
+                Preferences.Default.att_freq = value;
+                Preferences.Default.Save();
+            }
+        }
+
+        public static uint AttitudeFrequencyMax => 10;
+
+        public static uint AttitudeFrequencyMin => 4;
 
         public bool BroadcastEnabled
         {
@@ -208,7 +225,7 @@ namespace fs2ff
             UpdateChecker.Check().ContinueWith(task => UpdateInfo = task.Result, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private void Connect() => _flightSim.Connect(WindowHandle);
+        private void Connect() => _flightSim.Connect(WindowHandle, AttitudeFrequency);
 
         private void Disconnect() => _flightSim.Disconnect();
 

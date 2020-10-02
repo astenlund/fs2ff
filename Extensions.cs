@@ -5,6 +5,13 @@ namespace fs2ff
 {
     public static class Extensions
     {
+        public static T AdjustToBounds<T>(this T value, T min, T max) where T : IComparable =>
+            value.CompareTo(min) < 0
+                ? min
+                : value.CompareTo(max) > 0
+                    ? max
+                    : value;
+
         public static async Task RaiseAsync<T>(this Func<T, Task>? handler, T value)
         {
             if (handler == null)

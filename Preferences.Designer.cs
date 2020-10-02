@@ -94,5 +94,17 @@ namespace fs2ff {
                 this["suppress_broadcast_hint"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        public uint att_freq {
+            get {
+                return ((uint)(this["att_freq"]));
+            }
+            set {
+                this["att_freq"] = value;
+            }
+        }
     }
 }

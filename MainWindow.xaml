@@ -11,15 +11,17 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="520" Height="350"
-        MinWidth="520" MinHeight="300"
+        Width="555" Height="370"
+        MinWidth="520" MinHeight="370"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
         <converters:BooleanToIntConverter x:Key="BooleanToIntConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:FormatStringConverter x:Key="FormatStringConverter" />
         <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
         <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
+        <converters:UIntToDoubleConverter x:Key="UIntToDoubleConverter" />
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -108,11 +110,23 @@
                     IsChecked="{Binding DataPositionEnabled, Mode=TwoWay}"
                     Content="Position" />
                 <CheckBox
-                    IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
-                    Content="Attitude" />
-                <CheckBox
                     IsChecked="{Binding DataTrafficEnabled, Mode=TwoWay}"
                     Content="Traffic" />
+                <CheckBox
+                    IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
+                    Content="Attitude" />
+                <Label
+                    Content="{Binding Value, ElementName=Slider, Converter={StaticResource FormatStringConverter}, ConverterParameter='ATTITUDE FREQ: {0} Hz'}"
+                    Margin="0,14,0,5" />
+                <Slider
+                    Name="Slider"
+                    IsEnabled="{Binding DataAttitudeEnabled}"
+                    Value="{Binding AttitudeFrequency, Mode=TwoWay, Delay=2000, Converter={StaticResource UIntToDoubleConverter}}"
+                    Minimum="{Binding AttitudeFrequencyMin, Converter={StaticResource UIntToDoubleConverter}}"
+                    Maximum="{Binding AttitudeFrequencyMax, Converter={StaticResource UIntToDoubleConverter}}"
+                    Focusable="False"
+                    TickPlacement="Both"
+                    IsSnapToTickEnabled="True" />
             </StackPanel>
         </ui:SplitView.Pane>
         <Grid>

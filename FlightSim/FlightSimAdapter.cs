@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using fs2ff.Models;
 using Microsoft.FlightSimulator.SimConnect;
@@ -14,6 +15,7 @@ namespace fs2ff.FlightSim
         private const string AppName = "fs2ff";
         private const uint WM_USER_SIMCONNECT = 0x0402;
 
+        private Timer? _attitudeTimer;
         private SimConnect? _simConnect;
 
         public event Func<Attitude, Task>? AttitudeReceived;
@@ -23,12 +25,20 @@ namespace fs2ff.FlightSim
 
         public bool Connected => _simConnect != null;
 
-        public void Connect(IntPtr hwnd)
+        public void Connect(IntPtr hwnd, uint attitudeFrequency)
         {
             try
             {
+                UnsubscribeEvents();
+
+                _simConnect?.Dispose();
+                _attitudeTimer?.Dispose();
+
                 _simConnect = new SimConnect(AppName, hwnd, WM_USER_SIMCONNECT, null, 0);
+                _attitudeTimer = new Timer(RequestAttitudeData, null, 100, 1000 / attitudeFrequency);
+
                 SubscribeEvents();
+
                 StateChanged?.Invoke(false);
             }
             catch (COMException e)
@@ -55,6 +65,11 @@ namespace fs2ff.FlightSim
             }
         }
 
+        public void SetAttitudeFrequency(uint frequency)
+        {
+            _attitudeTimer?.Change(0, 1000 / frequency);
+        }
+
         private void AddToDataDefinition(DEFINITION defineId, string datumName, string? unitsName, SIMCONNECT_DATATYPE datumType = SIMCONNECT_DATATYPE.FLOAT64)
         {
             _simConnect?.AddToDataDefinition(defineId, datumName, unitsName, datumType, 0, SimConnect.SIMCONNECT_UNUSED);
@@ -66,6 +81,9 @@ namespace fs2ff.FlightSim
 
             _simConnect?.Dispose();
             _simConnect = null;
+
+            _attitudeTimer?.Dispose();
+            _attitudeTimer = null;
 
             StateChanged?.Invoke(failure);
         }
@@ -106,17 +124,14 @@ namespace fs2ff.FlightSim
             _simConnect?.RegisterDataDefineStruct<Traffic>(DEFINITION.Traffic);
         }
 
-        private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
+        private void RequestAttitudeData(object? _)
         {
-            if (data.uEventID == (uint) EVENT.SixHz)
-            {
-                _simConnect?.RequestDataOnSimObject(
-                    REQUEST.Attitude, DEFINITION.Attitude,
-                    SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                    SIMCONNECT_PERIOD.ONCE,
-                    SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
-                    0, 0, 0);
-            }
+            _simConnect?.RequestDataOnSimObject(
+                REQUEST.Attitude, DEFINITION.Attitude,
+                SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                SIMCONNECT_PERIOD.ONCE,
+                SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
+                0, 0, 0);
         }
 
         private void SimConnect_OnRecvEventObjectAddremove(SimConnect sender, SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE data)
@@ -213,7 +228,6 @@ namespace fs2ff.FlightSim
             {
                 _simConnect.OnRecvOpen += SimConnect_OnRecvOpen;
                 _simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
-                _simConnect.OnRecvEvent += SimConnect_OnRecvEvent;
                 _simConnect.OnRecvException += SimConnect_OnRecvException;
                 _simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
@@ -229,7 +243,6 @@ namespace fs2ff.FlightSim
                 _simConnect.OnRecvSimobjectDataBytype -= SimConnect_OnRecvSimobjectDataBytype;
                 _simConnect.OnRecvSimobjectData -= SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvException -= SimConnect_OnRecvException;
-                _simConnect.OnRecvEvent -= SimConnect_OnRecvEvent;
                 _simConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
                 _simConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
             }
