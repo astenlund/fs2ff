@@ -3,10 +3,11 @@ using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace fs2ff.Converters
 {
-    public class IpAddressToStringConverter : IValueConverter
+    public class IpAddressToStringConverter : MarkupExtension, IValueConverter
     {
         private readonly Regex _regex = new Regex(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
 
@@ -37,6 +38,11 @@ namespace fs2ff.Converters
             return IPAddress.TryParse(str, out var result)
                 ? result
                 : Binding.DoNothing;
+        }
+
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return this;
         }
     }
 }

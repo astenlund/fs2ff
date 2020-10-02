@@ -157,9 +157,9 @@ namespace fs2ff
                 if (!Equals(value, _ipAddress))
                 {
                     _ipAddress = value;
+                    ResetNetwork();
                     Preferences.Default.ip_address = value?.ToString() ?? "";
                     Preferences.Default.Save();
-                    ResetNetwork();
                 }
             }
         }

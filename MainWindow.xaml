@@ -6,7 +6,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:behaviors="clr-namespace:fs2ff.Behaviors"
-        xmlns:converters="clr-namespace:fs2ff.Converters"
+        xmlns:c="clr-namespace:fs2ff.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
@@ -16,12 +16,6 @@
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
-        <converters:BooleanToIntConverter x:Key="BooleanToIntConverter" />
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:FormatStringConverter x:Key="FormatStringConverter" />
-        <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
-        <converters:IpAddressToStringConverter x:Key="IpAddressToStringConverter" />
-        <converters:UIntToDoubleConverter x:Key="UIntToDoubleConverter" />
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -91,10 +85,10 @@
                 <TextBox
                     IsEnabled="{
                         Binding IsChecked, ElementName=BroadcastCheckBox,
-                        Converter={StaticResource InvertedBooleanConverter}}"
+                        Converter={c:InvertedBooleanConverter}}"
                     Text="{
                         Binding IpAddress, Mode=TwoWay,
-                        Converter={StaticResource IpAddressToStringConverter},
+                        Converter={c:IpAddressToStringConverter},
                         UpdateSourceTrigger=LostFocus}"
                     Template="{StaticResource WatermarkTextBoxTemplate}"
                     Tag="255.255.255.255"
@@ -116,14 +110,14 @@
                     IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
                     Content="Attitude" />
                 <Label
-                    Content="{Binding Value, ElementName=Slider, Converter={StaticResource FormatStringConverter}, ConverterParameter='ATTITUDE FREQ: {0} Hz'}"
+                    Content="{Binding Value, ElementName=Slider, Converter={c:FormatStringConverter}, ConverterParameter='ATTITUDE FREQ: {0} Hz'}"
                     Margin="0,14,0,5" />
                 <Slider
                     Name="Slider"
                     IsEnabled="{Binding DataAttitudeEnabled}"
-                    Value="{Binding AttitudeFrequency, Mode=TwoWay, Delay=2000, Converter={StaticResource UIntToDoubleConverter}}"
-                    Minimum="{Binding AttitudeFrequencyMin, Converter={StaticResource UIntToDoubleConverter}}"
-                    Maximum="{Binding AttitudeFrequencyMax, Converter={StaticResource UIntToDoubleConverter}}"
+                    Value="{Binding AttitudeFrequency, Mode=TwoWay, Delay=2000, Converter={c:UIntToDoubleConverter}}"
+                    Minimum="{Binding AttitudeFrequencyMin, Converter={c:UIntToDoubleConverter}}"
+                    Maximum="{Binding AttitudeFrequencyMax, Converter={c:UIntToDoubleConverter}}"
                     Focusable="False"
                     TickPlacement="Both"
                     IsSnapToTickEnabled="True" />
@@ -141,7 +135,7 @@
             <Label
                 Grid.Row="0"
                 Grid.Column="0"
-                Visibility="{Binding BroadcastHintVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding BroadcastHintVisible, Converter={c:BooleanToVisibilityConverter}}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 FontStyle="Italic"
@@ -177,7 +171,7 @@
                 Width="10" Height="10"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
-                Visibility="{Binding IndicatorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding IndicatorVisible, Converter={c:BooleanToVisibilityConverter}}"
                 Margin="25,0,0,0" />
             <Label
                 Grid.Row="1"
@@ -186,7 +180,7 @@
                 Foreground="DarkGray"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
-                Visibility="{Binding NotLabelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding NotLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
                 Margin="15,0,0,0" />
             <Label
                 Grid.Row="1"
@@ -195,7 +189,7 @@
                 Foreground="DarkGray"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
-                Visibility="{Binding ConnectedLabelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding ConnectedLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
                 Margin="43,0,0,0" />
             <Label
                 Grid.Row="1"
@@ -204,12 +198,12 @@
                 Foreground="OrangeRed"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
-                Visibility="{Binding ErrorLabelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding ErrorLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
                 Margin="15,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
-                Visibility="{Binding UpdateMsgVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Visibility="{Binding UpdateMsgVisible, Converter={c:BooleanToVisibilityConverter}}"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 FontStyle="Italic"
@@ -246,7 +240,7 @@
                                                 RelativeSource="{
                                                     RelativeSource FindAncestor,
                                                     AncestorType=ui:SplitView}"
-                                                Converter="{StaticResource BooleanToIntConverter}"
+                                                Converter="{c:BooleanToDoubleConverter}"
                                                 ConverterParameter="270,90" />
                                         </i:ChangePropertyAction.Value>
                                     </i:ChangePropertyAction>
