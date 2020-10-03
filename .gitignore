@@ -9,6 +9,9 @@
 # Libraries
 lib/*
 
+# Published binaries
+publish/*
+
 # User-specific files
 *.rsuser
 *.suo

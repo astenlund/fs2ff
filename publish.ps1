@@ -5,28 +5,28 @@ param (
     [string]$Runtime = 'win-x64',
     [Parameter(Mandatory)]
     [string]$Version,
-    [switch]$NoClean,
-    [switch]$RunAfterBuild
+    [ValidateSet('quiet','minimal','normal','detailed','diagnostic')]
+    [string]$Verbosity = "minimal",
+    [switch]$UseR2R
 )
 
-$PublishDir = ".\bin\$Configuration\netcoreapp3.1\$Runtime\publish"
+$PublishDir = "publish"
 
-if (!$NoClean) {
-    dotnet clean -r $Runtime -c $Configuration
-    if (Test-Path $PublishDir) { Remove-Item $PublishDir -Recurse -Verbose }
-}
+if (Test-Path $PublishDir) { Remove-Item $PublishDir -Recurse -Verbose }
 
 dotnet restore
 
 dotnet publish `
+    -o $PublishDir `
     -r $Runtime `
     -c $Configuration `
+    -v $Verbosity `
     /p:DebugType=none `
     /p:DebugSymbols=false `
     /p:SelfContained=true `
     /p:PublishSingleFile=true `
-    /P:PublishReadyToRun=true `
-    /p:PublishReadyToRunShowWarnings=true `
+    /P:PublishReadyToRun=$UseR2R `
+    /p:PublishReadyToRunShowWarnings=$UseR2R `
     /p:Version=$Version
 
 Get-Item "$PublishDir\fs2ff.exe" |
@@ -34,7 +34,3 @@ Get-Item "$PublishDir\fs2ff.exe" |
         @{ Name = 'Version'; Expression = { $_.VersionInfo.ProductVersion }},
         @{ Name = 'Size'; Expression = { "{0:f0} MB`r`n" -f ($_.Length / 1MB) }} |
     Format-List
-
-if ($RunAfterBuild) {
-    & "$PublishDir\fs2ff.exe"
-}
