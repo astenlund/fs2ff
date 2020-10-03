@@ -6,7 +6,7 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ApplicationIcon>img\icon.ico</ApplicationIcon>
     <UseWPF>true</UseWPF>
-    <LangVersion>9</LangVersion>
+    <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
