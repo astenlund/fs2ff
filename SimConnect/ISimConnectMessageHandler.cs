@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace fs2ff.FlightSim
+namespace fs2ff.SimConnect
 {
-    public interface IFlightSimMessageHandler : IDisposable
+    public interface ISimConnectMessageHandler : IDisposable
     {
         public void ReceiveFlightSimMessage();
         public IntPtr WindowHandle { set; }

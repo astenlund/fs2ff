@@ -1,13 +1,12 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 
-namespace fs2ff.FlightSim
+namespace fs2ff.SimConnect
 {
-    public enum DEFINITION : uint
+    public enum EVENT : uint
     {
         Undefined,
-        Position,
-        Attitude,
-        Traffic
+        ObjectAdded,
+        SixHz
     }
 }

@@ -1,7 +1,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 
-namespace fs2ff.FlightSim
+namespace fs2ff.SimConnect
 {
     public enum REQUEST : uint
     {

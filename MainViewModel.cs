@@ -6,18 +6,18 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-using fs2ff.FlightSim;
 using fs2ff.Models;
+using fs2ff.SimConnect;
 
 #pragma warning disable 67
 
 namespace fs2ff
 {
     [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "DispatcherTimer field is kept to prevent premature GC")]
-    public class MainViewModel : INotifyPropertyChanged, IFlightSimMessageHandler
+    public class MainViewModel : INotifyPropertyChanged, ISimConnectMessageHandler
     {
         private readonly DataSender _dataSender;
-        private readonly FlightSimAdapter _flightSim;
+        private readonly SimConnectAdapter _simConnect;
         private readonly IpDetectionService _ipDetectionService;
         private readonly DispatcherTimer _ipHintTimer;
 
@@ -31,15 +31,15 @@ namespace fs2ff
         private IPAddress? _ipAddress;
         private uint _ipHintMinutesLeft = Preferences.Default.ip_hint_time;
 
-        public MainViewModel(DataSender dataSender, FlightSimAdapter flightSim, IpDetectionService ipDetectionService)
+        public MainViewModel(DataSender dataSender, SimConnectAdapter simConnect, IpDetectionService ipDetectionService)
         {
             _dataSender = dataSender;
 
-            _flightSim = flightSim;
-            _flightSim.StateChanged += FlightSim_StateChanged;
-            _flightSim.PositionReceived += FlightSim_PositionReceived;
-            _flightSim.AttitudeReceived += FlightSim_AttitudeReceived;
-            _flightSim.TrafficReceived += FlightSim_TrafficReceived;
+            _simConnect = simConnect;
+            _simConnect.StateChanged += SimConnectStateChanged;
+            _simConnect.PositionReceived += SimConnectPositionReceived;
+            _simConnect.AttitudeReceived += SimConnectAttitudeReceived;
+            _simConnect.TrafficReceived += SimConnectTrafficReceived;
 
             _ipDetectionService = ipDetectionService;
             _ipDetectionService.NewIpDetected += IpDetectionService_NewIpDetected;
@@ -77,7 +77,7 @@ namespace fs2ff
             set
             {
                 _attitudeFrequency = value.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
-                _flightSim.SetAttitudeFrequency(_attitudeFrequency);
+                _simConnect.SetAttitudeFrequency(_attitudeFrequency);
                 Preferences.Default.att_freq = value;
                 Preferences.Default.Save();
             }
@@ -203,7 +203,7 @@ namespace fs2ff
         private FlightSimState CurrentFlightSimState =>
             _errorOccurred
                 ? FlightSimState.ErrorOccurred
-                : _flightSim.Connected
+                : _simConnect.Connected
                     ? FlightSimState.Connected
                     : FlightSimState.Disconnected;
 
@@ -227,16 +227,16 @@ namespace fs2ff
         {
             _ipDetectionService.NewIpDetected -= IpDetectionService_NewIpDetected;
 
-            _flightSim.TrafficReceived -= FlightSim_TrafficReceived;
-            _flightSim.AttitudeReceived -= FlightSim_AttitudeReceived;
-            _flightSim.PositionReceived -= FlightSim_PositionReceived;
-            _flightSim.StateChanged -= FlightSim_StateChanged;
-            _flightSim.Dispose();
+            _simConnect.TrafficReceived -= SimConnectTrafficReceived;
+            _simConnect.AttitudeReceived -= SimConnectAttitudeReceived;
+            _simConnect.PositionReceived -= SimConnectPositionReceived;
+            _simConnect.StateChanged -= SimConnectStateChanged;
+            _simConnect.Dispose();
 
             _dataSender.Dispose();
         }
 
-        public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
+        public void ReceiveFlightSimMessage() => _simConnect.ReceiveMessage();
 
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
 
@@ -245,13 +245,13 @@ namespace fs2ff
             UpdateChecker.Check().ContinueWith(task => UpdateInfo = task.Result, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private void Connect() => _flightSim.Connect(WindowHandle, AttitudeFrequency);
+        private void Connect() => _simConnect.Connect(WindowHandle, AttitudeFrequency);
 
-        private void Disconnect() => _flightSim.Disconnect();
+        private void Disconnect() => _simConnect.Disconnect();
 
         private void DismissSettingsPane() => SettingsPaneVisible = false;
 
-        private async Task FlightSim_AttitudeReceived(Attitude att)
+        private async Task SimConnectAttitudeReceived(Attitude att)
         {
             if (DataAttitudeEnabled)
             {
@@ -259,7 +259,7 @@ namespace fs2ff
             }
         }
 
-        private async Task FlightSim_PositionReceived(Position pos)
+        private async Task SimConnectPositionReceived(Position pos)
         {
             if (DataPositionEnabled)
             {
@@ -267,7 +267,7 @@ namespace fs2ff
             }
         }
 
-        private void FlightSim_StateChanged(bool failure)
+        private void SimConnectStateChanged(bool failure)
         {
             _errorOccurred = failure;
 
@@ -275,7 +275,7 @@ namespace fs2ff
             UpdateVisualState();
         }
 
-        private async Task FlightSim_TrafficReceived(Traffic tfk, uint id)
+        private async Task SimConnectTrafficReceived(Traffic tfk, uint id)
         {
             if (DataTrafficEnabled)
             {
@@ -301,7 +301,7 @@ namespace fs2ff
 
         private void IpHintCallback(object? sender, EventArgs e)
         {
-            if (IpHintMinutesLeft > 0 && IpAddress == null && _flightSim.Connected)
+            if (IpHintMinutesLeft > 0 && IpAddress == null && _simConnect.Connected)
             {
                 IpHintMinutesLeft--;
             }
@@ -330,7 +330,7 @@ namespace fs2ff
 
         private void ToggleConnect()
         {
-            if (_flightSim.Connected) Disconnect();
+            if (_simConnect.Connected) Disconnect();
             else                         Connect();
         }
 

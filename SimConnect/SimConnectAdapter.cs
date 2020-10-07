@@ -7,16 +7,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using fs2ff.Models;
 using Microsoft.FlightSimulator.SimConnect;
+using SimConnectImpl = Microsoft.FlightSimulator.SimConnect.SimConnect;
 
-namespace fs2ff.FlightSim
+namespace fs2ff.SimConnect
 {
-    public class FlightSimAdapter : IDisposable
+    public class SimConnectAdapter : IDisposable
     {
         private const string AppName = "fs2ff";
         private const uint WM_USER_SIMCONNECT = 0x0402;
 
         private Timer? _attitudeTimer;
-        private SimConnect? _simConnect;
+        private SimConnectImpl? _simConnect;
 
         public event Func<Attitude, Task>? AttitudeReceived;
         public event Func<Position, Task>? PositionReceived;
@@ -34,7 +35,7 @@ namespace fs2ff.FlightSim
                 _simConnect?.Dispose();
                 _attitudeTimer?.Dispose();
 
-                _simConnect = new SimConnect(AppName, hwnd, WM_USER_SIMCONNECT, null, 0);
+                _simConnect = new SimConnectImpl(AppName, hwnd, WM_USER_SIMCONNECT, null, 0);
                 _attitudeTimer = new Timer(RequestAttitudeData, null, 100, 1000 / attitudeFrequency);
 
                 SubscribeEvents();
@@ -72,7 +73,7 @@ namespace fs2ff.FlightSim
 
         private void AddToDataDefinition(DEFINITION defineId, string datumName, string? unitsName, SIMCONNECT_DATATYPE datumType = SIMCONNECT_DATATYPE.FLOAT64)
         {
-            _simConnect?.AddToDataDefinition(defineId, datumName, unitsName, datumType, 0, SimConnect.SIMCONNECT_UNUSED);
+            _simConnect?.AddToDataDefinition(defineId, datumName, unitsName, datumType, 0, SimConnectImpl.SIMCONNECT_UNUSED);
         }
 
         private void DisconnectInternal(bool failure)
@@ -130,7 +131,7 @@ namespace fs2ff.FlightSim
             {
                 _simConnect?.RequestDataOnSimObject(
                     REQUEST.Attitude, DEFINITION.Attitude,
-                    SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                    SimConnectImpl.SIMCONNECT_OBJECT_ID_USER,
                     SIMCONNECT_PERIOD.ONCE,
                     SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
                     0, 0, 0);
@@ -141,12 +142,12 @@ namespace fs2ff.FlightSim
             }
         }
 
-        private void SimConnect_OnRecvEventObjectAddremove(SimConnect sender, SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE data)
+        private void SimConnect_OnRecvEventObjectAddremove(SimConnectImpl sender, SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE data)
         {
             if (data.uEventID == (uint) EVENT.ObjectAdded &&
                 (data.eObjType == SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT ||
                  data.eObjType == SIMCONNECT_SIMOBJECT_TYPE.HELICOPTER) &&
-                data.dwData != SimConnect.SIMCONNECT_OBJECT_ID_USER)
+                data.dwData != SimConnectImpl.SIMCONNECT_OBJECT_ID_USER)
             {
                 _simConnect?.RequestDataOnSimObject(
                     REQUEST.TrafficObjectBase + data.dwData,
@@ -157,13 +158,13 @@ namespace fs2ff.FlightSim
             }
         }
 
-        private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
+        private void SimConnect_OnRecvException(SimConnectImpl sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             Console.Error.WriteLine("Exception caught: " + data.dwException);
             DisconnectInternal(true);
         }
 
-        private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV data)
+        private void SimConnect_OnRecvOpen(SimConnectImpl sender, SIMCONNECT_RECV data)
         {
             RegisterPositionStruct();
             RegisterAttitudeStruct();
@@ -171,7 +172,7 @@ namespace fs2ff.FlightSim
 
             _simConnect?.RequestDataOnSimObject(
                 REQUEST.Position, DEFINITION.Position,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                SimConnectImpl.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SECOND,
                 SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
                 0, 0, 0);
@@ -183,12 +184,12 @@ namespace fs2ff.FlightSim
             _simConnect?.SubscribeToSystemEvent(EVENT.SixHz, "6Hz");
         }
 
-        private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
+        private void SimConnect_OnRecvQuit(SimConnectImpl sender, SIMCONNECT_RECV data)
         {
             DisconnectInternal(false);
         }
 
-        private async void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
+        private async void SimConnect_OnRecvSimobjectData(SimConnectImpl sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             if (data.dwRequestID == (uint) REQUEST.Position &&
                 data.dwDefineID == (uint) DEFINITION.Position &&
@@ -206,19 +207,19 @@ namespace fs2ff.FlightSim
 
             if (data.dwRequestID == (uint) REQUEST.TrafficObjectBase + data.dwObjectID &&
                 data.dwDefineID == (uint) DEFINITION.Traffic &&
-                data.dwObjectID != SimConnect.SIMCONNECT_OBJECT_ID_USER &&
+                data.dwObjectID != SimConnectImpl.SIMCONNECT_OBJECT_ID_USER &&
                 data.dwData?.FirstOrDefault() is Traffic tfk)
             {
                 await TrafficReceived.RaiseAsync(tfk, data.dwObjectID).ConfigureAwait(false);
             }
         }
 
-        private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
+        private void SimConnect_OnRecvSimobjectDataBytype(SimConnectImpl sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
             if ((data.dwRequestID == (uint) REQUEST.TrafficAircraft ||
                  data.dwRequestID == (uint) REQUEST.TrafficHelicopter) &&
                 data.dwDefineID == (uint) DEFINITION.Traffic &&
-                data.dwObjectID != SimConnect.SIMCONNECT_OBJECT_ID_USER)
+                data.dwObjectID != SimConnectImpl.SIMCONNECT_OBJECT_ID_USER)
             {
                 _simConnect?.RequestDataOnSimObject(
                     REQUEST.TrafficObjectBase + data.dwObjectID,

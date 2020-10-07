@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows;
-using fs2ff.FlightSim;
+using fs2ff.SimConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -49,7 +49,7 @@ namespace fs2ff
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<MainViewModel>();
-            services.AddSingleton<FlightSimAdapter>();
+            services.AddSingleton<SimConnectAdapter>();
             services.AddSingleton<DataSender>();
             services.AddSingleton<IpDetectionService>();
             services.AddHostedService(provider => provider.GetRequiredService<IpDetectionService>());

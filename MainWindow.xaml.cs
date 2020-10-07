@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Interop;
-using fs2ff.FlightSim;
+using fs2ff.SimConnect;
 
 namespace fs2ff
 {
@@ -23,14 +23,14 @@ namespace fs2ff
 
             HwndSource hwndSource = (HwndSource) PresentationSource.FromVisual(this)!;
             hwndSource.AddHook(WndProc);
-            ((IFlightSimMessageHandler) DataContext).WindowHandle = hwndSource.Handle;
+            ((ISimConnectMessageHandler) DataContext).WindowHandle = hwndSource.Handle;
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)
         {
             if (iMsg == WM_USER_SIMCONNECT)
             {
-                ((IFlightSimMessageHandler) DataContext).ReceiveFlightSimMessage();
+                ((ISimConnectMessageHandler) DataContext).ReceiveFlightSimMessage();
             }
 
             return IntPtr.Zero;
@@ -38,7 +38,7 @@ namespace fs2ff
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            ((IFlightSimMessageHandler) DataContext).Dispose();
+            ((ISimConnectMessageHandler) DataContext).Dispose();
         }
     }
 }
