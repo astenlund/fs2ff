@@ -74,24 +74,12 @@ namespace fs2ff {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool broadcast_enabled {
+        public bool ip_detection_enabled {
             get {
-                return ((bool)(this["broadcast_enabled"]));
+                return ((bool)(this["ip_detection_enabled"]));
             }
             set {
-                this["broadcast_enabled"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool suppress_broadcast_hint {
-            get {
-                return ((bool)(this["suppress_broadcast_hint"]));
-            }
-            set {
-                this["suppress_broadcast_hint"] = value;
+                this["ip_detection_enabled"] = value;
             }
         }
         
@@ -104,6 +92,18 @@ namespace fs2ff {
             }
             set {
                 this["att_freq"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public uint ip_hint_time {
+            get {
+                return ((uint)(this["ip_hint_time"]));
+            }
+            set {
+                this["ip_hint_time"] = value;
             }
         }
     }

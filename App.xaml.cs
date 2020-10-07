@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Windows;
 using fs2ff.FlightSim;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,13 +12,29 @@ namespace fs2ff
     /// </summary>
     public partial class App
     {
+        private readonly IHost _host;
+
         public App()
         {
-            var host = new HostBuilder()
+            Instance = this;
+            _host = new HostBuilder()
                 .ConfigureServices(ConfigureServices)
                 .Build();
+        }
 
-            ServiceProvider = host.Services;
+        public static App? Instance { get; private set; }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            await _host.StopAsync(TimeSpan.FromSeconds(3));
+            _host.Dispose();
+            base.OnExit(e);
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await _host.StartAsync();
+            base.OnStartup(e);
         }
 
         public static Version AssemblyVersion => Assembly.GetEntryAssembly()!.GetName().Version!;
@@ -27,13 +44,15 @@ namespace fs2ff
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion ?? "";
 
-        public static IServiceProvider? ServiceProvider { get; private set; }
+        public IServiceProvider? ServiceProvider => _host.Services;
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<FlightSimAdapter>();
-            services.AddSingleton<NetworkAdapter>();
+            services.AddSingleton<DataSender>();
+            services.AddSingleton<IpDetectionService>();
+            services.AddHostedService(provider => provider.GetRequiredService<IpDetectionService>());
         }
     }
 }

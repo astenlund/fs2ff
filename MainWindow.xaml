@@ -12,7 +12,7 @@
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
         Width="555" Height="370"
-        MinWidth="520" MinHeight="370"
+        MinWidth="555" MinHeight="370"
         Closing="Window_Closing"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
@@ -76,16 +76,13 @@
                 Orientation="Vertical"
                 Margin="15,0,15,0">
                 <Label
-                    Content="NETWORK MODE"
+                    Content="DEVICE IP"
                     Margin="0,20,0,5" />
                 <CheckBox
-                    x:Name="BroadcastCheckBox"
-                    IsChecked="{Binding BroadcastEnabled, Mode=TwoWay}"
-                    Content="Broadcast" />
+                    IsChecked="{Binding AutoDetectIpEnabled, Mode=TwoWay}"
+                    Content="Auto-detect*"
+                    ToolTip="Requires ForeFlight running in the foreground" />
                 <TextBox
-                    IsEnabled="{
-                        Binding IsChecked, ElementName=BroadcastCheckBox,
-                        Converter={c:InvertedBooleanConverter}}"
                     Text="{
                         Binding IpAddress, Mode=TwoWay,
                         Converter={c:IpAddressToStringConverter},
@@ -135,18 +132,18 @@
             <Label
                 Grid.Row="0"
                 Grid.Column="0"
-                Visibility="{Binding BroadcastHintVisible, Converter={c:BooleanToVisibilityConverter}}"
+                Visibility="{Binding IpHintVisible, Converter={c:BooleanToVisibilityConverter}}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 FontStyle="Italic"
                 Margin="0,30,0,0">
                 <StackPanel Orientation="Vertical">
                     <TextBlock HorizontalAlignment="Center">
-                        Hint: Disable Broadcast mode and enter
+                        Device IP not set. Please set it manually or enable
                     </TextBlock>
                     <TextBlock HorizontalAlignment="Center">
-                        device IP for better performance.
-                        <Hyperlink Command="{Binding AcknowledgeBroadcastHintCommand}">Got it.</Hyperlink>
+                        auto-detect for improved performance.
+                        <Hyperlink Command="{Binding OpenSettingsCommand}">Open settings.</Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </Label>

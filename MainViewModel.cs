@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using fs2ff.FlightSim;
 using fs2ff.Models;
 
@@ -12,36 +13,46 @@ using fs2ff.Models;
 
 namespace fs2ff
 {
+    [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "DispatcherTimer field is kept to prevent premature GC")]
     public class MainViewModel : INotifyPropertyChanged, IFlightSimMessageHandler
     {
+        private readonly DataSender _dataSender;
         private readonly FlightSimAdapter _flightSim;
-        private readonly NetworkAdapter _network;
+        private readonly IpDetectionService _ipDetectionService;
+        private readonly DispatcherTimer _ipHintTimer;
 
         private uint _attitudeFrequency = Preferences.Default.att_freq.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
-        private bool _broadcastEnabled = Preferences.Default.broadcast_enabled;
+        private bool _autoDetectIpEnabled = Preferences.Default.ip_detection_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
         private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
         private bool _dataTrafficEnabled = Preferences.Default.tfk_enabled;
         private bool _errorOccurred;
         private IntPtr _hwnd = IntPtr.Zero;
         private IPAddress? _ipAddress;
+        private uint _ipHintMinutesLeft = Preferences.Default.ip_hint_time;
 
-        public MainViewModel(NetworkAdapter network, FlightSimAdapter flightSim)
+        public MainViewModel(DataSender dataSender, FlightSimAdapter flightSim, IpDetectionService ipDetectionService)
         {
-            _network = network;
+            _dataSender = dataSender;
+
             _flightSim = flightSim;
             _flightSim.StateChanged += FlightSim_StateChanged;
             _flightSim.PositionReceived += FlightSim_PositionReceived;
             _flightSim.AttitudeReceived += FlightSim_AttitudeReceived;
             _flightSim.TrafficReceived += FlightSim_TrafficReceived;
 
-            AcknowledgeBroadcastHintCommand = new ActionCommand(AcknowledgeBroadcastHint);
+            _ipDetectionService = ipDetectionService;
+            _ipDetectionService.NewIpDetected += IpDetectionService_NewIpDetected;
+
+            OpenSettingsCommand = new ActionCommand(OpenSettings);
             DismissSettingsPaneCommand = new ActionCommand(DismissSettingsPane);
             GotoNewReleaseCommand = new ActionCommand(GotoReleaseNotesPage);
             ToggleConnectCommand = new ActionCommand(ToggleConnect, CanConnect);
             ToggleSettingsPaneCommand = new ActionCommand(ToggleSettingsPane);
 
             _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : null;
+
+            _ipHintTimer = new DispatcherTimer(TimeSpan.FromMinutes(1), DispatcherPriority.Normal, IpHintCallback, Dispatcher.CurrentDispatcher);
 
             CheckForUpdates();
             UpdateVisualState();
@@ -60,8 +71,6 @@ namespace fs2ff
 
         public static string WindowTitle => $"fs2ff - {App.InformationalVersion}";
 
-        public ICommand AcknowledgeBroadcastHintCommand { get; }
-
         public uint AttitudeFrequency
         {
             get => _attitudeFrequency;
@@ -78,22 +87,19 @@ namespace fs2ff
 
         public static uint AttitudeFrequencyMin => 4;
 
-        public bool BroadcastEnabled
+        public bool AutoDetectIpEnabled
         {
-            get => _broadcastEnabled;
+            get => _autoDetectIpEnabled;
             set
             {
-                if (value != _broadcastEnabled)
+                if (value != _autoDetectIpEnabled)
                 {
-                    _broadcastEnabled = value;
-                    Preferences.Default.broadcast_enabled = value;
+                    _autoDetectIpEnabled = value;
+                    Preferences.Default.ip_detection_enabled = value;
                     Preferences.Default.Save();
-                    ResetNetwork();
                 }
             }
         }
-
-        public bool BroadcastHintVisible => !PrefSuppressBroadcastHint && (BroadcastEnabled || IpAddress == null);
 
         public string? ConnectButtonText { get; private set; }
 
@@ -157,14 +163,24 @@ namespace fs2ff
                 if (!Equals(value, _ipAddress))
                 {
                     _ipAddress = value;
-                    ResetNetwork();
                     Preferences.Default.ip_address = value?.ToString() ?? "";
                     Preferences.Default.Save();
+
+                    if (value != null)
+                    {
+                        ResetIpHintMinutesLeft();
+                    }
+
+                    ResetDataSenderConnection();
                 }
             }
         }
 
+        public bool IpHintVisible => IpAddress == null && IpHintMinutesLeft == 0;
+
         public bool NotLabelVisible { get; private set; }
+
+        public ICommand OpenSettingsCommand { get; }
 
         public bool SettingsPaneVisible { get; set; }
 
@@ -191,14 +207,17 @@ namespace fs2ff
                     ? FlightSimState.Connected
                     : FlightSimState.Disconnected;
 
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local", Justification = "PropertyChanged.Fody needs this to be non-static")]
-        private bool PrefSuppressBroadcastHint
+        private uint IpHintMinutesLeft
         {
-            get => Preferences.Default.suppress_broadcast_hint;
+            get => _ipHintMinutesLeft;
             set
             {
-                Preferences.Default.suppress_broadcast_hint = value;
-                Preferences.Default.Save();
+                if (value != _ipHintMinutesLeft)
+                {
+                    _ipHintMinutesLeft = value;
+                    Preferences.Default.ip_hint_time = value;
+                    Preferences.Default.Save();
+                }
             }
         }
 
@@ -206,17 +225,18 @@ namespace fs2ff
 
         public void Dispose()
         {
+            _ipDetectionService.NewIpDetected -= IpDetectionService_NewIpDetected;
+
             _flightSim.TrafficReceived -= FlightSim_TrafficReceived;
             _flightSim.AttitudeReceived -= FlightSim_AttitudeReceived;
             _flightSim.PositionReceived -= FlightSim_PositionReceived;
             _flightSim.StateChanged -= FlightSim_StateChanged;
             _flightSim.Dispose();
-            _network.Dispose();
+
+            _dataSender.Dispose();
         }
 
         public void ReceiveFlightSimMessage() => _flightSim.ReceiveMessage();
-
-        private void AcknowledgeBroadcastHint() => PrefSuppressBroadcastHint = true;
 
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
 
@@ -235,7 +255,7 @@ namespace fs2ff
         {
             if (DataAttitudeEnabled)
             {
-                await _network.Send(att).ConfigureAwait(false);
+                await _dataSender.Send(att).ConfigureAwait(false);
             }
         }
 
@@ -243,7 +263,7 @@ namespace fs2ff
         {
             if (DataPositionEnabled)
             {
-                await _network.Send(pos).ConfigureAwait(false);
+                await _dataSender.Send(pos).ConfigureAwait(false);
             }
         }
 
@@ -251,7 +271,7 @@ namespace fs2ff
         {
             _errorOccurred = failure;
 
-            ResetNetwork();
+            ResetDataSenderConnection();
             UpdateVisualState();
         }
 
@@ -259,7 +279,7 @@ namespace fs2ff
         {
             if (DataTrafficEnabled)
             {
-                await _network.Send(tfk, id).ConfigureAwait(false);
+                await _dataSender.Send(tfk, id).ConfigureAwait(false);
             }
         }
 
@@ -271,16 +291,41 @@ namespace fs2ff
             }
         }
 
-        private void ResetNetwork()
+        private void IpDetectionService_NewIpDetected(IPAddress ip)
+        {
+            if (AutoDetectIpEnabled)
+            {
+                IpAddress = ip;
+            }
+        }
+
+        private void IpHintCallback(object? sender, EventArgs e)
+        {
+            if (IpHintMinutesLeft > 0 && IpAddress == null && _flightSim.Connected)
+            {
+                IpHintMinutesLeft--;
+            }
+        }
+
+        private void OpenSettings() => SettingsPaneVisible = true;
+
+        private void ResetDataSenderConnection()
         {
             if (CurrentFlightSimState == FlightSimState.Connected)
             {
-                _network.Connect(BroadcastEnabled ? IPAddress.Broadcast : IpAddress);
+                _dataSender.Connect(IpAddress);
             }
             else
             {
-                _network.Disconnect();
+                _dataSender.Disconnect();
             }
+        }
+
+        private void ResetIpHintMinutesLeft()
+        {
+            Preferences.Default.PropertyValues["ip_hint_time"].SerializedValue = Preferences.Default.Properties["ip_hint_time"].DefaultValue;
+            Preferences.Default.PropertyValues["ip_hint_time"].Deserialized = false;
+            IpHintMinutesLeft = Preferences.Default.ip_hint_time;
         }
 
         private void ToggleConnect()

@@ -6,6 +6,6 @@ namespace fs2ff
 {
     public class ViewModelLocator
     {
-        public MainViewModel Main => App.ServiceProvider.GetRequiredService<MainViewModel>();
+        public MainViewModel? Main => App.Instance?.ServiceProvider.GetRequiredService<MainViewModel>();
     }
 }

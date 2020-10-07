@@ -8,7 +8,7 @@ using fs2ff.Models;
 
 namespace fs2ff
 {
-    public class NetworkAdapter : IDisposable
+    public class DataSender : IDisposable
     {
         private const int Port = 49002;
         private const string SimId = "MSFS";
