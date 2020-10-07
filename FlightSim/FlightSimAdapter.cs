@@ -79,11 +79,11 @@ namespace fs2ff.FlightSim
         {
             UnsubscribeEvents();
 
-            _simConnect?.Dispose();
-            _simConnect = null;
-
             _attitudeTimer?.Dispose();
             _attitudeTimer = null;
+
+            _simConnect?.Dispose();
+            _simConnect = null;
 
             StateChanged?.Invoke(failure);
         }
@@ -126,12 +126,19 @@ namespace fs2ff.FlightSim
 
         private void RequestAttitudeData(object? _)
         {
-            _simConnect?.RequestDataOnSimObject(
-                REQUEST.Attitude, DEFINITION.Attitude,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                SIMCONNECT_PERIOD.ONCE,
-                SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
-                0, 0, 0);
+            try
+            {
+                _simConnect?.RequestDataOnSimObject(
+                    REQUEST.Attitude, DEFINITION.Attitude,
+                    SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                    SIMCONNECT_PERIOD.ONCE,
+                    SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
+                    0, 0, 0);
+            }
+            catch (COMException e)
+            {
+                Console.Error.WriteLine("Exception caught: " + e);
+            }
         }
 
         private void SimConnect_OnRecvEventObjectAddremove(SimConnect sender, SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE data)
