@@ -20,8 +20,7 @@ namespace fs2ff
         {
             await Task.Run(async () =>
             {
-                var endPoint = new IPEndPoint(IPAddress.Any, Port);
-                using var udpClient = new UdpClient(endPoint);
+                using var udpClient = new UdpClient(Port, IPAddress.Any.AddressFamily);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
