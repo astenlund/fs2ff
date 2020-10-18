@@ -19,31 +19,33 @@ namespace fs2ff
         {
             await Task.Run(async () =>
             {
-                using var udpClient = new UdpClient(Port, IPAddress.Any.AddressFamily);
-
-                while (!cancellationToken.IsCancellationRequested)
+                try
                 {
-                    var result = await udpClient.ReceiveAsync();
-                    var text = Encoding.ASCII.GetString(result.Buffer);
+                    using var udpClient = new UdpClient(Port, IPAddress.Any.AddressFamily);
 
-                    if (!IsForeFlightGdl90(text))
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        continue;
-                    }
+                        var result = await udpClient.ReceiveAsync();
+                        var text = Encoding.ASCII.GetString(result.Buffer);
 
-                    NewIpDetected?.Invoke(result.RemoteEndPoint.Address);
+                        if (IsForeFlightGdl90(text))
+                        {
+                            NewIpDetected?.Invoke(result.RemoteEndPoint.Address);
+                        }
+                    }
+                }
+                catch (SocketException e)
+                {
+                    Console.Error.WriteLine(e);
                 }
             }, cancellationToken);
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        private static bool IsForeFlightGdl90(string text)
-        {
-            return JsonObject.TryParse(text, out var json) && json.TryGetValue("App", out var app) && app.Stringify() == "\"ForeFlight\"";
-        }
+        private static bool IsForeFlightGdl90(string text) =>
+            JsonObject.TryParse(text, out var json) &&
+            json.TryGetValue("App", out var app) &&
+            app.Stringify() == "\"ForeFlight\"";
     }
 }
