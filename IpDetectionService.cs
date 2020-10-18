@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using Windows.Data.Json;
 using Microsoft.Extensions.Hosting;
 
@@ -32,10 +31,7 @@ namespace fs2ff
                         continue;
                     }
 
-                    await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        NewIpDetected?.Invoke(result.RemoteEndPoint.Address);
-                    }));
+                    NewIpDetected?.Invoke(result.RemoteEndPoint.Address);
                 }
             }, cancellationToken);
         }
