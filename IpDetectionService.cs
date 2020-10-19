@@ -2,9 +2,9 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Microsoft.Extensions.Hosting;
 
 namespace fs2ff
@@ -43,9 +43,17 @@ namespace fs2ff
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        private static bool IsForeFlightGdl90(string text) =>
-            JsonObject.TryParse(text, out var json) &&
-            json.TryGetValue("App", out var app) &&
-            app.Stringify() == "\"ForeFlight\"";
+        private static bool IsForeFlightGdl90(string text)
+        {
+            try
+            {
+                return JsonDocument.Parse(text).RootElement.TryGetProperty("App", out var app) &&
+                       app.GetString() == "ForeFlight";
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
