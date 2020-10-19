@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:behaviors="clr-namespace:fs2ff.Behaviors"
+        xmlns:b="clr-namespace:fs2ff.Behaviors"
         xmlns:c="clr-namespace:fs2ff.Converters"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
@@ -86,12 +86,13 @@
                     Text="{
                         Binding IpAddress, Mode=TwoWay,
                         Converter={c:IpAddressToStringConverter},
-                        UpdateSourceTrigger=LostFocus}"
+                        UpdateSourceTrigger=PropertyChanged, Delay=5000}"
                     Template="{StaticResource WatermarkTextBoxTemplate}"
                     Tag="255.255.255.255"
                     Margin="0,10,0,0">
                     <i:Interaction.Behaviors>
-                        <behaviors:MoveFocusOnEnterBehavior />
+                        <b:MoveFocusOnEnterBehavior />
+                        <b:UpdateSourceOnLostFocusBehavior />
                     </i:Interaction.Behaviors>
                 </TextBox>
                 <Label
