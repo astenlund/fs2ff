@@ -17,10 +17,13 @@ namespace fs2ff
             InitializeComponent();
         }
 
-        protected override void OnSourceInitialized(EventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            base.OnSourceInitialized(e);
+            ((ISimConnectMessageHandler) DataContext).Dispose();
+        }
 
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             HwndSource hwndSource = (HwndSource) PresentationSource.FromVisual(this)!;
             hwndSource.AddHook(WndProc);
             ((ISimConnectMessageHandler) DataContext).WindowHandle = hwndSource.Handle;
@@ -34,11 +37,6 @@ namespace fs2ff
             }
 
             return IntPtr.Zero;
-        }
-
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            ((ISimConnectMessageHandler) DataContext).Dispose();
         }
     }
 }
