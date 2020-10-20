@@ -10,7 +10,7 @@ Simple! Just follow these easy steps:
 1. Start Microsoft Flight Simulator. As soon as you get to the main menu, the game is ready to accept connections.
 1. While waiting for MSFS to start (it takes a while!), download fs2ff.exe from the [latest release](https://github.com/astenlund/fs2ff/releases/latest).
 1. Double-click the file.
-1. If you get a scary red popup that tells you that "Windows protected your PC", click More info -> Run anyway.
+1. If you get a popup window that tells you that "Windows protected your PC", click More info -> Run anyway.
 1. In the fs2ff app, click the big Connect button. Unless anything goes wrong, you will now be connected to MSFS.
 1. To verify the connection, open ForeFlight on your iPad or iPhone and navigate to More -> Devices.
 1. Do not forget to activate Auto Center (upper right corner) in the map view in ForeFlight.
@@ -48,9 +48,8 @@ As of now, no other flight simulators have been tested.
 
 ## How do I build this?
 
-1. Download [.NET Core SDK](https://dotnet.microsoft.com/download) and [Visual Studio Community](https://visualstudio.microsoft.com/downloads/).
-1. Clone the repo, or download the source code for the [latest release](https://github.com/astenlund/fs2ff/releases/latest).
-1. Extract the zip file.
+1. Download and install [.NET Core SDK](https://dotnet.microsoft.com/download) and [Visual Studio Community](https://visualstudio.microsoft.com/downloads/).
+1. Clone the repo or download and extract [a zip](https://github.com/astenlund/fs2ff/archive/master.zip).
 1. Install MSFS SDK (see instructions below).
 1. Navigate to the SDK on your hard drive and find the following two files:
    - "MSFS SDK\SimConnect SDK\lib\SimConnect.dll"
@@ -67,11 +66,11 @@ As of now, no other flight simulators have been tested.
 1. Go to OPTIONS -> GENERAL -> DEVELOPERS and enable DEVELOPER MODE.
 1. You will now have a new menu at the top. Click Help -> SDK Installer.
 1. Let your browser download the installer and run it.
-1. You might get a scary red popup. If so, click More info -> Run anyway.
+1. You might get a "Windows protected your PC" popup. If so, click More info -> Run anyway.
 1. Go through the installation wizard and make sure that Core Components is selected.
 1. When finished, you will likely find the SDK installed under "C:\MSFS SDK".
 
-## Why do I get a scary red popup when running the app for the first time?
+## What's with the "Windows protected your PC" popup?
 
 This is Microsoft telling you that the app has not been cryptographically signed. Software that you download from big corporations does not present this behaviour, because these companies typically purchase certificates from trusted Certificate Authorities and sign their binaries before shipping to customers. This is cumbersome and expensive and not in the scope of this open source project. The binaries that I have provided are for convenience. If you do not trust me (and why should you?), you are more than welcome to build from source yourself (see instructions above).
 
