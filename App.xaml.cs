@@ -39,10 +39,10 @@ namespace fs2ff
 
         public static Version AssemblyVersion => Assembly.GetEntryAssembly()!.GetName().Version!;
 
-        public static string InformationalVersion => "v" + Assembly
+        public static string InformationalVersion => "v" + (Assembly
             .GetEntryAssembly()?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-            .InformationalVersion ?? "";
+            .InformationalVersion ?? "0.0.0");
 
         public IServiceProvider? ServiceProvider => _host.Services;
 
