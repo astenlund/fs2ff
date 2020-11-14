@@ -1,11 +1,7 @@
-﻿// ReSharper disable MemberCanBeMadeStatic.Global
-
-using Microsoft.Extensions.DependencyInjection;
-
-namespace fs2ff
+﻿namespace fs2ff
 {
     public class ViewModelLocator
     {
-        public MainViewModel? Main => App.Instance?.ServiceProvider?.GetRequiredService<MainViewModel>();
+        public static MainViewModel Main => App.GetRequiredService<MainViewModel>();
     }
 }

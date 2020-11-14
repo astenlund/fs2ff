@@ -12,28 +12,20 @@ namespace fs2ff
     /// </summary>
     public partial class App
     {
-        private readonly IHost _host;
-
-        public App()
-        {
-            Instance = this;
-            _host = new HostBuilder()
-                .ConfigureServices(ConfigureServices)
-                .Build();
-        }
-
-        public static App? Instance { get; private set; }
+        private static readonly IHost Host = new HostBuilder()
+            .ConfigureServices(ConfigureServices)
+            .Build();
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            await _host.StopAsync(TimeSpan.FromSeconds(3));
-            _host.Dispose();
+            await Host.StopAsync(TimeSpan.FromSeconds(3));
+            Host.Dispose();
             base.OnExit(e);
         }
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-            await _host.StartAsync();
+            await Host.StartAsync();
             base.OnStartup(e);
         }
 
@@ -44,9 +36,9 @@ namespace fs2ff
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion ?? "0.0.0");
 
-        public IServiceProvider? ServiceProvider => _host.Services;
+        public static T GetRequiredService<T>() where T : class => Host.Services.GetRequiredService<T>();
 
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<SimConnectAdapter>();
