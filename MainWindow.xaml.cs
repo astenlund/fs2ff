@@ -22,7 +22,7 @@ namespace fs2ff
             ((ISimConnectMessageHandler) DataContext).Dispose();
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             HwndSource hwndSource = (HwndSource) PresentationSource.FromVisual(this)!;
             hwndSource.AddHook(WndProc);
