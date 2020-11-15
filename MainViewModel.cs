@@ -261,7 +261,7 @@ namespace fs2ff
 
         private async Task SimConnectPositionReceived(Position pos)
         {
-            if (DataPositionEnabled)
+            if (DataPositionEnabled && (pos.Latitude != 0d || pos.Longitude != 0d))
             {
                 await _dataSender.Send(pos).ConfigureAwait(false);
             }
