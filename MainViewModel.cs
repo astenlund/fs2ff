@@ -277,7 +277,8 @@ namespace fs2ff
 
         private async Task SimConnectTrafficReceived(Traffic tfk, uint id)
         {
-            if (DataTrafficEnabled)
+            // Ignore traffic with id=1, that's our own aircraft
+            if (DataTrafficEnabled && id != 1)
             {
                 await _dataSender.Send(tfk, id).ConfigureAwait(false);
             }
