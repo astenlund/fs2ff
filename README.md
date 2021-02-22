@@ -32,9 +32,9 @@ Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will n
 
 Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulator Data" option.
 
-### Other apps
+### Other apps (not verified by me)
 
-As of now, no other EFB apps have been tested.
+- FlyQ EFB (thanks, @erayymz)
 
 ## Does it work with other flight simulators?
 
