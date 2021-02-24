@@ -35,6 +35,7 @@ Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulato
 ### Other apps (not verified by me)
 
 - FlyQ EFB (thanks, @erayymz)
+- FltPlan GO (need to select XPlane as source of GPS data)
 
 ## Does it work with other flight simulators?
 
