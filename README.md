@@ -43,6 +43,10 @@ Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulato
 
 No need for my app. X-Plane already has this broadcast capability built-in, see [this support page](https://foreflight.com/support/support-center/category/about-foreflight-mobile/204115525).
 
+### Prepar3D
+
+Should work straight out of the box for P3D 4.0 and up, so no need for my app. For older versions, use [FSUIPC](http://www.schiratti.com/dowson.html). See [this support page](https://foreflight.com/support/support-center/category/about-foreflight-mobile/204115345).
+
 ### Other flight sims
 
 As of now, no other flight simulators have been tested.
