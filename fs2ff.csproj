@@ -18,25 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ContentWithTargetPath Include="lib\concrt140.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>concrt140.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="lib\msvcp140.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>msvcp140.dll</TargetPath>
-    </ContentWithTargetPath>
     <ContentWithTargetPath Include="lib\SimConnect.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>SimConnect.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="lib\vcruntime140.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>vcruntime140.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="lib\vcruntime140_1.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>vcruntime140_1.dll</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
 
