@@ -21,6 +21,7 @@ namespace fs2ff
         private readonly IpDetectionService _ipDetectionService;
         private readonly DispatcherTimer _ipHintTimer;
         private readonly DispatcherTimer _autoConnectTimer;
+
         private uint _attitudeFrequency = Preferences.Default.att_freq.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
         private bool _autoDetectIpEnabled = Preferences.Default.ip_detection_enabled;
         private bool _autoConnectEnabled = Preferences.Default.auto_connect_enabled;
@@ -54,7 +55,6 @@ namespace fs2ff
             _ipAddress = IPAddress.TryParse(Preferences.Default.ip_address, out var ip) ? ip : null;
 
             _ipHintTimer = new DispatcherTimer(TimeSpan.FromMinutes(1), DispatcherPriority.Normal, IpHintCallback, Dispatcher.CurrentDispatcher);
-
             _autoConnectTimer = new DispatcherTimer(TimeSpan.FromSeconds(5), DispatcherPriority.Normal, AutoConnectCallback, Dispatcher.CurrentDispatcher);
 
             ManageAutoConnect();
@@ -92,22 +92,6 @@ namespace fs2ff
 
         public static uint AttitudeFrequencyMin => 4;
 
-        public bool AutoDetectIpEnabled
-        {
-            get => _autoDetectIpEnabled;
-            set
-            {
-                if (value != _autoDetectIpEnabled)
-                {
-                    _autoDetectIpEnabled = value;
-                    Preferences.Default.ip_detection_enabled = value;
-                    Preferences.Default.Save();
-                }
-            }
-        }
-
-        public bool ConnectButtonEnabled { get => !_autoConnectEnabled; }
-
         public bool AutoConnectEnabled
         {
             get => _autoConnectEnabled;
@@ -130,6 +114,25 @@ namespace fs2ff
                 }
             }
         }
+
+        public bool AutoConnectLabelVisible { get; private set; }
+
+        public bool AutoDetectIpEnabled
+        {
+            get => _autoDetectIpEnabled;
+            set
+            {
+                if (value != _autoDetectIpEnabled)
+                {
+                    _autoDetectIpEnabled = value;
+                    Preferences.Default.ip_detection_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
+
+        public bool ConnectButtonEnabled { get => !_autoConnectEnabled; }
+
         public string? ConnectButtonText { get; private set; }
 
         public bool ConnectedLabelVisible { get; private set; }
@@ -209,8 +212,6 @@ namespace fs2ff
 
         public bool NotLabelVisible { get; private set; }
 
-        public bool AutoConnectLabelVisible { get; private set; }
-
         public ICommand OpenSettingsCommand { get; }
 
         public bool SettingsPaneVisible { get; set; }
@@ -268,6 +269,8 @@ namespace fs2ff
 
         public void ReceiveFlightSimMessage() => _simConnect.ReceiveMessage();
 
+        private void AutoConnectCallback(object? sender, EventArgs e) => Connect();
+
         private bool CanConnect() => WindowHandle != IntPtr.Zero;
 
         private void CheckForUpdates()
@@ -280,6 +283,64 @@ namespace fs2ff
         private void Disconnect() => _simConnect.Disconnect();
 
         private void DismissSettingsPane() => SettingsPaneVisible = false;
+
+
+        private void GotoReleaseNotesPage()
+        {
+            if (UpdateInfo != null)
+            {
+                Process.Start("explorer.exe", UpdateInfo.DownloadLink.ToString());
+            }
+        }
+
+        private void IpDetectionService_NewIpDetected(IPAddress ip)
+        {
+            if (AutoDetectIpEnabled)
+            {
+                IpAddress = ip;
+            }
+        }
+
+        private void IpHintCallback(object? sender, EventArgs e)
+        {
+            if (IpHintMinutesLeft > 0 && IpAddress == null && _simConnect.Connected)
+            {
+                IpHintMinutesLeft--;
+            }
+        }
+
+        private void ManageAutoConnect()
+        {
+            if (!AutoConnectEnabled || CurrentFlightSimState == FlightSimState.Connected)
+            {
+                _autoConnectTimer.Stop();
+            }
+            else
+            {
+                _autoConnectTimer.Start();
+            }
+        }
+
+        private void OpenSettings() => SettingsPaneVisible = true;
+
+        private void ResetDataSenderConnection()
+        {
+            if (CurrentFlightSimState == FlightSimState.Connected)
+            {
+                _dataSender.Connect(IpAddress);
+            }
+            else
+            {
+                _dataSender.Disconnect();
+            }
+        }
+
+        private void ResetIpHintMinutesLeft()
+        {
+            Preferences.Default.PropertyValues["ip_hint_time"].SerializedValue = Preferences.Default.Properties["ip_hint_time"].DefaultValue;
+            Preferences.Default.PropertyValues["ip_hint_time"].Deserialized = false;
+            IpHintMinutesLeft = Preferences.Default.ip_hint_time;
+        }
 
         private async Task SimConnectAttitudeReceived(Attitude att)
         {
@@ -315,72 +376,10 @@ namespace fs2ff
             }
         }
 
-        private void GotoReleaseNotesPage()
-        {
-            if (UpdateInfo != null)
-            {
-                Process.Start("explorer.exe", UpdateInfo.DownloadLink.ToString());
-            }
-        }
-
-        private void IpDetectionService_NewIpDetected(IPAddress ip)
-        {
-            if (AutoDetectIpEnabled)
-            {
-                IpAddress = ip;
-            }
-        }
-
-        private void IpHintCallback(object? sender, EventArgs e)
-        {
-            if (IpHintMinutesLeft > 0 && IpAddress == null && _simConnect.Connected)
-            {
-                IpHintMinutesLeft--;
-            }
-        }
-
-        private void AutoConnectCallback(object? sender, EventArgs e)
-        {
-            this.Connect();
-        }
-
-        private void OpenSettings() => SettingsPaneVisible = true;
-
-        private void ManageAutoConnect()
-        {
-            if (!AutoConnectEnabled || CurrentFlightSimState == FlightSimState.Connected)
-            {
-                _autoConnectTimer.Stop();
-            }
-            else
-            {
-                _autoConnectTimer.Start();
-            }
-        }
-
-        private void ResetDataSenderConnection()
-        {
-            if (CurrentFlightSimState == FlightSimState.Connected)
-            {
-                _dataSender.Connect(IpAddress);
-            }
-            else
-            {
-                _dataSender.Disconnect();
-            }
-        }
-
-        private void ResetIpHintMinutesLeft()
-        {
-            Preferences.Default.PropertyValues["ip_hint_time"].SerializedValue = Preferences.Default.Properties["ip_hint_time"].DefaultValue;
-            Preferences.Default.PropertyValues["ip_hint_time"].Deserialized = false;
-            IpHintMinutesLeft = Preferences.Default.ip_hint_time;
-        }
-
         private void ToggleConnect()
         {
             if (_simConnect.Connected) Disconnect();
-            else Connect();
+            else                          Connect();
         }
 
         private void ToggleSettingsPane() => SettingsPaneVisible = !SettingsPaneVisible;
