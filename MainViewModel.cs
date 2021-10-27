@@ -119,10 +119,6 @@ namespace fs2ff
                     Preferences.Default.auto_connect_enabled = value;
                     Preferences.Default.Save();
 
-                    // The ConnectButtonEnabled property is the inverse of the AutoConnectEnabled property
-                    // so ensure everything bound to it updates any time AutoConnectEnabled changes.
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ConnectButtonEnabled"));
-
                     // If auto connect was running and the sim wasn't then there is likely
                     // an error flagged. Clear it whenever AutoConnectEnabled changes state
                     // so in the event auto connect is disabled the window won't show
