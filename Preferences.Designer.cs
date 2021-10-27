@@ -82,6 +82,18 @@ namespace fs2ff {
                 this["ip_detection_enabled"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool auto_connect_enabled {
+            get {
+                return ((bool)(this["auto_connect_enabled"]));
+            }
+            set {
+                this["auto_connect_enabled"] = value;
+            }
+        }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
