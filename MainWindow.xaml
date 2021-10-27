@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="555" Height="370"
+        Width="555" Height="420"
         MinWidth="555" MinHeight="370"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
@@ -76,6 +76,10 @@
             <StackPanel
                 Orientation="Vertical"
                 Margin="15,0,15,0">
+                <CheckBox Margin="0,20,0,5" 
+                    IsChecked="{Binding AutoConnectEnabled, Mode=TwoWay}"
+                    Content="Auto connect"
+                    ToolTip="Automatically connects to Flight Simulator when it launches" />
                 <Label
                     Content="DEVICE IP"
                     Margin="0,20,0,5" />
@@ -160,7 +164,8 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Width="144"
-                Height="60" />
+                Height="60"
+                IsEnabled="{Binding ConnectButtonEnabled}" />
             <Ellipse
                 Grid.Row="1"
                 Grid.Column="0"
@@ -190,6 +195,15 @@
                 HorizontalAlignment="Left"
                 Visibility="{Binding ConnectedLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
                 Margin="43,0,0,0" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="AUTO CONNECTING..."
+                Foreground="DarkGray"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Visibility="{Binding AutoConnectLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
+                Margin="25,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"

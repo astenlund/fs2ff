@@ -20,9 +20,10 @@ namespace fs2ff
         private readonly SimConnectAdapter _simConnect;
         private readonly IpDetectionService _ipDetectionService;
         private readonly DispatcherTimer _ipHintTimer;
-
+        private readonly DispatcherTimer _autoConnectTimer;
         private uint _attitudeFrequency = Preferences.Default.att_freq.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
         private bool _autoDetectIpEnabled = Preferences.Default.ip_detection_enabled;
+        private bool _autoConnectEnabled = Preferences.Default.auto_connect_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
         private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
         private bool _dataTrafficEnabled = Preferences.Default.tfk_enabled;
@@ -54,6 +55,9 @@ namespace fs2ff
 
             _ipHintTimer = new DispatcherTimer(TimeSpan.FromMinutes(1), DispatcherPriority.Normal, IpHintCallback, Dispatcher.CurrentDispatcher);
 
+            _autoConnectTimer = new DispatcherTimer(TimeSpan.FromSeconds(5), DispatcherPriority.Normal, AutoConnectCallback, Dispatcher.CurrentDispatcher);
+
+            ManageAutoConnect();
             CheckForUpdates();
             UpdateVisualState();
         }
@@ -66,7 +70,8 @@ namespace fs2ff
             Unknown,
             Connected,
             Disconnected,
-            ErrorOccurred
+            ErrorOccurred,
+            AutoConnecting
         }
 
         public static string WindowTitle => $"fs2ff - {App.InformationalVersion}";
@@ -101,6 +106,34 @@ namespace fs2ff
             }
         }
 
+        public bool ConnectButtonEnabled { get => !_autoConnectEnabled; }
+
+        public bool AutoConnectEnabled
+        {
+            get => _autoConnectEnabled;
+            set
+            {
+                if (value != _autoConnectEnabled)
+                {
+                    _autoConnectEnabled = value;
+                    Preferences.Default.auto_connect_enabled = value;
+                    Preferences.Default.Save();
+
+                    // The ConnectButtonEnabled property is the inverse of the AutoConnectEnabled property
+                    // so ensure everything bound to it updates any time AutoConnectEnabled changes.
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ConnectButtonEnabled"));
+
+                    // If auto connect was running and the sim wasn't then there is likely
+                    // an error flagged. Clear it whenever AutoConnectEnabled changes state
+                    // so in the event auto connect is disabled the window won't show
+                    // a meaningless connection error to the user.
+                    _errorOccurred = false;
+
+                    ManageAutoConnect();
+                    UpdateVisualState();
+                }
+            }
+        }
         public string? ConnectButtonText { get; private set; }
 
         public bool ConnectedLabelVisible { get; private set; }
@@ -180,6 +213,8 @@ namespace fs2ff
 
         public bool NotLabelVisible { get; private set; }
 
+        public bool AutoConnectLabelVisible { get; private set; }
+
         public ICommand OpenSettingsCommand { get; }
 
         public bool SettingsPaneVisible { get; set; }
@@ -201,11 +236,10 @@ namespace fs2ff
         }
 
         private FlightSimState CurrentFlightSimState =>
-            _errorOccurred
-                ? FlightSimState.ErrorOccurred
-                : _simConnect.Connected
-                    ? FlightSimState.Connected
-                    : FlightSimState.Disconnected;
+            _simConnect.Connected ? FlightSimState.Connected :
+            AutoConnectEnabled ? FlightSimState.AutoConnecting :
+            _errorOccurred ? FlightSimState.ErrorOccurred :
+            FlightSimState.Disconnected;
 
         private uint IpHintMinutesLeft
         {
@@ -271,6 +305,7 @@ namespace fs2ff
         {
             _errorOccurred = failure;
 
+            ManageAutoConnect();
             ResetDataSenderConnection();
             UpdateVisualState();
         }
@@ -308,7 +343,24 @@ namespace fs2ff
             }
         }
 
+        private void AutoConnectCallback(object? sender, EventArgs e)
+        {
+            this.Connect();
+        }
+
         private void OpenSettings() => SettingsPaneVisible = true;
+
+        private void ManageAutoConnect()
+        {
+            if (!AutoConnectEnabled || CurrentFlightSimState == FlightSimState.Connected)
+            {
+                _autoConnectTimer.Stop();
+            }
+            else
+            {
+                _autoConnectTimer.Start();
+            }
+        }
 
         private void ResetDataSenderConnection()
         {
@@ -332,19 +384,20 @@ namespace fs2ff
         private void ToggleConnect()
         {
             if (_simConnect.Connected) Disconnect();
-            else                         Connect();
+            else Connect();
         }
 
         private void ToggleSettingsPane() => SettingsPaneVisible = !SettingsPaneVisible;
 
         private void UpdateVisualState()
         {
-            (IndicatorVisible, NotLabelVisible, ErrorLabelVisible, ConnectedLabelVisible, ConnectButtonText) = CurrentFlightSimState switch
+            (IndicatorVisible, AutoConnectLabelVisible, NotLabelVisible, ErrorLabelVisible, ConnectedLabelVisible, ConnectButtonText) = CurrentFlightSimState switch
             {
-                FlightSimState.Connected     => (true, false, false, true, "Disconnect"),
-                FlightSimState.Disconnected  => (false, true, false, true, "Connect"),
-                FlightSimState.ErrorOccurred => (false, false, true, false, "Connect"),
-                _                            => (false, true, false, true, "Connect")
+                FlightSimState.AutoConnecting => (false, true, false, false, false, "Connect"),
+                FlightSimState.Connected => (true, false, false, false, true, "Disconnect"),
+                FlightSimState.Disconnected => (false, false, true, false, true, "Connect"),
+                FlightSimState.ErrorOccurred => (false, false, false, true, false, "Connect"),
+                _ => (false, false, true, false, true, "Connect")
             };
         }
     }
