@@ -11,8 +11,8 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="555" Height="420"
-        MinWidth="555" MinHeight="370"
+        Width="555" Height="430"
+        MinWidth="555" MinHeight="430"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
@@ -176,7 +176,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Visibility="{Binding IndicatorVisible, Converter={c:BooleanToVisibilityConverter}}"
-                Margin="25,0,0,0" />
+                Margin="27,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
@@ -185,7 +185,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Visibility="{Binding NotLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
-                Margin="15,0,0,0" />
+                Margin="17,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
@@ -194,7 +194,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Visibility="{Binding ConnectedLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
-                Margin="43,0,0,0" />
+                Margin="45,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
@@ -203,7 +203,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Visibility="{Binding AutoConnectLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
-                Margin="25,0,0,0" />
+                Margin="10,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
@@ -212,7 +212,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Visibility="{Binding ErrorLabelVisible, Converter={c:BooleanToVisibilityConverter}}"
-                Margin="15,0,0,0" />
+                Margin="17,0,0,0" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
@@ -220,7 +220,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 FontStyle="Italic"
-                Margin="15,0,15,0">
+                Margin="15,0,25,0">
                 <Hyperlink Command="{Binding GotoNewReleaseCommand}">Update available</Hyperlink>
             </Label>
             <ToggleButton
