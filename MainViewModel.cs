@@ -10,7 +10,8 @@ using fs2ff.Models;
 using fs2ff.SimConnect;
 
 #pragma warning disable 67
-
+// dotnet publish -c Release -r win-x64 /p:PublishSingleFile=true fs2ff.sln
+// copy C:\Users\jdamp\source\repos\fs2ff\bin\Release\netcoreapp3.1\win-x64\publish\fs2ff.exe c:\FSUIPC7\fs2ff.exe
 namespace fs2ff
 {
     [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "DispatcherTimer field is kept to prevent premature GC")]
@@ -26,6 +27,7 @@ namespace fs2ff
         private bool _autoDetectIpEnabled = Preferences.Default.ip_detection_enabled;
         private bool _autoConnectEnabled = Preferences.Default.auto_connect_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
+        private bool _adjustSpeedEnabled = Preferences.Default.adjust_speed;
         private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
         private bool _dataTrafficEnabled = Preferences.Default.tfk_enabled;
         private bool _errorOccurred;
@@ -146,6 +148,20 @@ namespace fs2ff
                 {
                     _dataAttitudeEnabled = value;
                     Preferences.Default.att_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
+
+        public bool DataAdjustSpeed
+        {
+            get => this._adjustSpeedEnabled;
+            set
+            {
+                if (value != this._adjustSpeedEnabled)
+                {
+                    this._adjustSpeedEnabled = value;
+                    Preferences.Default.adjust_speed = value;
                     Preferences.Default.Save();
                 }
             }
@@ -354,6 +370,11 @@ namespace fs2ff
         {
             if (DataPositionEnabled && (pos.Latitude != 0d || pos.Longitude != 0d))
             {
+                if (this.DataAdjustSpeed)
+                {
+                    pos.GroundSpeed *= 0.5144447;
+                }
+
                 await _dataSender.Send(pos).ConfigureAwait(false);
             }
         }

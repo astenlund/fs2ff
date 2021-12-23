@@ -46,7 +46,22 @@ namespace fs2ff {
                 this["att_enabled"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool adjust_speed
+        {
+            get
+            {
+                return ((bool)(this["adjust_speed"]));
+            }
+            set
+            {
+                this["adjust_speed"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
