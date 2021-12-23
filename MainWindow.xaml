@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="555" Height="430"
+        Width="555" Height="445"
         MinWidth="555" MinHeight="430"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
@@ -112,6 +112,9 @@
                 <CheckBox
                     IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
                     Content="Attitude" />
+                <CheckBox
+                    IsChecked="{Binding DataAdjustSpeed, Mode=TwoWay}"
+                    Content="Adjust Speed" />
                 <Label
                     Content="{Binding Value, ElementName=Slider, Converter={c:FormatStringConverter}, ConverterParameter='ATTITUDE FREQ: {0} Hz'}"
                     Margin="0,14,0,5" />
@@ -229,7 +232,7 @@
                 Grid.RowSpan="2"
                 IsChecked="{Binding SettingsPaneVisible, Mode=TwoWay}"
                 VerticalAlignment="Stretch"
-                Width="47">
+                Width="47" HorizontalAlignment="Right">
                 <ToggleButton.ContentTemplate>
                     <DataTemplate>
                         <Label Content="S   E   T   T   I   N   G   S" Foreground="White">
