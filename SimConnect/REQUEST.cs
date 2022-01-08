@@ -10,6 +10,9 @@ namespace fs2ff.SimConnect
         Attitude,
         TrafficAircraft,
         TrafficHelicopter,
-        TrafficObjectBase = 0x01000000
+        Owner,
+        Airport,
+        Weather = 10,
+        TrafficObjectBase = 0x00100000
     }
 }

@@ -38,5 +38,10 @@ namespace fs2ff
 
             return IntPtr.Zero;
         }
+
+        private void DataStratusEnabled(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

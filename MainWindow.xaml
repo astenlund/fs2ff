@@ -11,8 +11,8 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="555" Height="445"
-        MinWidth="555" MinHeight="430"
+        Width="600" Height="500"
+        MinWidth="600" MinHeight="500"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
@@ -113,8 +113,17 @@
                     IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
                     Content="Attitude" />
                 <CheckBox
-                    IsChecked="{Binding DataAdjustSpeed, Mode=TwoWay}"
-                    Content="Adjust Speed" />
+                    IsChecked="{Binding DataGdl90Enabled, Mode=TwoWay}"
+                    Content="Use GDL90 Protocol"
+                    ToolTip="Send Data via GDL90 protocol (special setup is required for Garmin Pilot)"/>
+                <RadioButton x:Name="Stratus"
+                    Content="+ Stratus" Height="32" GroupName="TypeRadio" FontSize="12" Margin="10,0,0,0"
+                    IsChecked="{Binding DataStratusEnabled, Mode=TwoWay}" IsEnabled="{Binding DataGdl90Enabled}" 
+                    ToolTip="Emulate Stratus 3 Device. Garmin Pilot requires the host to have an adapter bound to 10.29.39.1 and the client must be on the 10.29.39.x subnet."/>
+                <RadioButton x:Name="Stratux"
+                    Content="+ Stratux" Height="32" GroupName="TypeRadio" FontSize="12" Margin="10,0,0,0"
+                    IsChecked="{Binding DataStratuxEnabled, Mode=TwoWay}" IsEnabled="{Binding DataGdl90Enabled}" 
+                    ToolTip="Emulate Stratux Device. Warning Currently doesn't work with Garmin Pilot"/>
                 <Label
                     Content="{Binding Value, ElementName=Slider, Converter={c:FormatStringConverter}, ConverterParameter='ATTITUDE FREQ: {0} Hz'}"
                     Margin="0,14,0,5" />

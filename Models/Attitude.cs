@@ -10,5 +10,12 @@ namespace fs2ff.Models
         public double Pitch;
         public double Bank;
         public double TrueHeading;
+        public double SkidSlip;
+        public double TurnRate;
+        public double AirspeedIndicated;
+        public double AirspeedTrue;
+        public double PressureAlt;
+        public double VertSpeed;
+        public double GForce;
     }
 }

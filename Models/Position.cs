@@ -1,5 +1,6 @@
 ﻿// ReSharper disable FieldCanBeMadeReadOnly.Global
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace fs2ff.Models
