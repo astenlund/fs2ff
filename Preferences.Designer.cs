@@ -50,15 +50,45 @@ namespace fs2ff {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool adjust_speed
+        public bool gdl90_enabled
         {
             get
             {
-                return ((bool)(this["adjust_speed"]));
+                return ((bool)(this["gdl90_enabled"]));
             }
             set
             {
-                this["adjust_speed"] = value;
+                this["gdl90_enabled"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool stratus_enabled
+        {
+            get
+            {
+                return ((bool)(this["stratus_enabled"]));
+            }
+            set
+            {
+                this["stratus_enabled"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool stratux_enabled
+        {
+            get
+            {
+                return ((bool)(this["stratux_enabled"]));
+            }
+            set
+            {
+                this["stratux_enabled"] = value;
             }
         }
 

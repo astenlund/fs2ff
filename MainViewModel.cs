@@ -1,13 +1,15 @@
-﻿using System;
+﻿using fs2ff.Models;
+using fs2ff.SimConnect;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-using fs2ff.Models;
-using fs2ff.SimConnect;
 
 #pragma warning disable 67
 // dotnet publish -c Release -r win-x64 /p:PublishSingleFile=true fs2ff.sln
@@ -22,28 +24,52 @@ namespace fs2ff
         private readonly IpDetectionService _ipDetectionService;
         private readonly DispatcherTimer _ipHintTimer;
         private readonly DispatcherTimer _autoConnectTimer;
+        private readonly DispatcherTimer _stratusTimer;
+        private readonly DispatcherTimer _gdl90Timer;
+        private object _ownerLock = new object();
+        private Traffic _ownerInfo;
 
         private uint _attitudeFrequency = Preferences.Default.att_freq.AdjustToBounds(AttitudeFrequencyMin, AttitudeFrequencyMax);
         private bool _autoDetectIpEnabled = Preferences.Default.ip_detection_enabled;
         private bool _autoConnectEnabled = Preferences.Default.auto_connect_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
-        private bool _adjustSpeedEnabled = Preferences.Default.adjust_speed;
+        private bool _gdl90Enabled = Preferences.Default.gdl90_enabled;
         private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
         private bool _dataTrafficEnabled = Preferences.Default.tfk_enabled;
+        private bool  _dataStratusEnabled = Preferences.Default.stratus_enabled;
+        private bool  _dataStratuxEnabled = Preferences.Default.stratux_enabled;
         private bool _errorOccurred;
         private IntPtr _hwnd = IntPtr.Zero;
         private IPAddress? _ipAddress;
         private uint _ipHintMinutesLeft = Preferences.Default.ip_hint_time;
 
+        public Traffic OwnerInfo
+        {
+            get
+            {
+                lock(_ownerLock)
+                {
+                    return _ownerInfo;
+                }
+            }
+            set
+            {
+                lock(_ownerLock)
+                {
+                    _ownerInfo = value;
+                }
+            }
+        }
+
         public MainViewModel(DataSender dataSender, SimConnectAdapter simConnect, IpDetectionService ipDetectionService)
         {
             _dataSender = dataSender;
-
             _simConnect = simConnect;
             _simConnect.StateChanged += SimConnectStateChanged;
             _simConnect.PositionReceived += SimConnectPositionReceived;
             _simConnect.AttitudeReceived += SimConnectAttitudeReceived;
             _simConnect.TrafficReceived += SimConnectTrafficReceived;
+            _simConnect.OwnerReceived += SimConnectOwnerReceived;
 
             _ipDetectionService = ipDetectionService;
             _ipDetectionService.NewIpDetected += IpDetectionService_NewIpDetected;
@@ -58,6 +84,8 @@ namespace fs2ff
 
             _ipHintTimer = new DispatcherTimer(TimeSpan.FromMinutes(1), DispatcherPriority.Normal, IpHintCallback, Dispatcher.CurrentDispatcher);
             _autoConnectTimer = new DispatcherTimer(TimeSpan.FromSeconds(5), DispatcherPriority.Normal, AutoConnectCallback, Dispatcher.CurrentDispatcher);
+            _stratusTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(800), DispatcherPriority.Normal, SimConnectSratusUpdate, Dispatcher.CurrentDispatcher);
+            _gdl90Timer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, SimConnectGdl90Update, Dispatcher.CurrentDispatcher);
 
             ManageAutoConnect();
             CheckForUpdates();
@@ -153,20 +181,51 @@ namespace fs2ff
             }
         }
 
-        public bool DataAdjustSpeed
+        public bool DataGdl90Enabled
         {
-            get => this._adjustSpeedEnabled;
+            get => this._gdl90Enabled;
             set
             {
-                if (value != this._adjustSpeedEnabled)
+                if (value != this._gdl90Enabled)
                 {
-                    this._adjustSpeedEnabled = value;
-                    Preferences.Default.adjust_speed = value;
+                    this._gdl90Enabled = value;
+                    Preferences.Default.gdl90_enabled = value;
+                    this.DataGdl90Enabled = value;
+                    Preferences.Default.Save();
+                    ResetDataSenderConnection();
+                }
+            }
+        }
+
+        public bool DataStratusEnabled
+        {
+            get => _dataStratusEnabled;
+            set
+            {
+                if (value != _dataStratusEnabled)
+                {
+                    _dataStratusEnabled = value;
+                    Preferences.Default.stratus_enabled = value;
                     Preferences.Default.Save();
                 }
             }
         }
 
+
+        public bool DataStratuxEnabled
+        {
+            get => _dataStratuxEnabled;
+            set
+            {
+                if (value != _dataStratuxEnabled)
+                {
+                    _dataStratuxEnabled = value;
+                    Preferences.Default.stratux_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
+        
         public bool DataPositionEnabled
         {
             get => _dataPositionEnabled;
@@ -223,6 +282,20 @@ namespace fs2ff
                 }
             }
         }
+
+
+        //private bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
+        //{
+        //    if (!Equals(field, newValue))
+        //    {
+        //        field = newValue;
+        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //        return true;
+        //    }
+
+        //    return false;
+        //}
+
 
         public bool IpHintVisible => IpAddress == null && IpHintMinutesLeft == 0;
 
@@ -344,9 +417,20 @@ namespace fs2ff
             if (CurrentFlightSimState == FlightSimState.Connected)
             {
                 _dataSender.Connect(IpAddress);
+                if (this._gdl90Enabled)
+                {
+                    _stratusTimer.Start();
+                    _gdl90Timer.Start();
+                }
             }
             else
             {
+                if (_stratusTimer.IsEnabled)
+                {
+                    _stratusTimer.Stop();
+                    _gdl90Timer.Stop();
+                }
+
                 _dataSender.Disconnect();
             }
         }
@@ -370,12 +454,7 @@ namespace fs2ff
         {
             if (DataPositionEnabled && (pos.Latitude != 0d || pos.Longitude != 0d))
             {
-                if (this.DataAdjustSpeed)
-                {
-                    pos.GroundSpeed *= 0.5144447;
-                }
-
-                await _dataSender.Send(pos).ConfigureAwait(false);
+                    await _dataSender.Send(pos).ConfigureAwait(false);
             }
         }
 
@@ -388,6 +467,46 @@ namespace fs2ff
             UpdateVisualState();
         }
 
+        /// <summary>
+        /// GDL90 spec messages
+        /// </summary>
+        /// <returns></returns>
+        private async void SimConnectGdl90Update(object? sender, EventArgs e)
+        {
+            var hb = new Gdl90Heartbeat();
+            var data = hb.ToGdl90Message();
+            await _dataSender.Send(data).ConfigureAwait(false);
+
+            if (ViewModelLocator.Main.DataStratuxEnabled)
+            {
+                var shb = new Gdl90StratuxHeartbeat();
+                data = shb.ToGdl90Message();
+                await _dataSender.Send(data).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Stratus/FF specific update messages
+        /// </summary>
+        /// <returns></returns>
+        private async void SimConnectSratusUpdate(object? sender, EventArgs e)
+        {
+            if (ViewModelLocator.Main.DataStratusEnabled)
+            {
+                var status = new Gdl90StratusStatus();
+                await _dataSender.Send(status.ToGdl90Message()).ConfigureAwait(false);
+            }
+
+            if (ViewModelLocator.Main.DataStratuxEnabled)
+            {
+                var stratux = new Gdl90StratuxStatus();
+                await _dataSender.Send(stratux.ToGdl90Message()).ConfigureAwait(false);
+            }
+
+            var ffmId = new Gdl90FfmId();
+            await _dataSender.Send(ffmId.ToGdl90Message()).ConfigureAwait(false);
+        }
+
         private async Task SimConnectTrafficReceived(Traffic tfk, uint id)
         {
             // Ignore traffic with id=1, that's our own aircraft
@@ -395,6 +514,12 @@ namespace fs2ff
             {
                 await _dataSender.Send(tfk, id).ConfigureAwait(false);
             }
+        }
+
+        private async Task SimConnectOwnerReceived(Traffic tfk, uint id)
+        {
+            OwnerInfo = tfk;
+            await _dataSender.Send(tfk, id).ConfigureAwait(false);
         }
 
         private void ToggleConnect()
@@ -416,5 +541,6 @@ namespace fs2ff
                 _ => (false, false, true, false, true, "Connect")
             };
         }
+
     }
 }
