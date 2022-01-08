@@ -1,36 +1,18 @@
 # fs2ff (Flight Simulator to ForeFlight)
 
 ## What is it?
-
-This is a utility app that connects Microsoft Flight Simulator 2020 with the Electronic Flight Bag (EFB) app ForeFlight, sharing virtual GPS data from the former to the latter. This allows the use of ForeFlight as a navigational aid when simming. Much more cost-effective than flying an actual airplane!
+This fork of astenlund/fs2ff that emplements the GDL90 protocol as an option instead of using XPlane protocol. This is a work in progress as there is still a lot of things left to do.  I'm just doing this work to learn more about GDL90 and how the different EFBs work with it.
 
 ## How do I use it?
 
-Simple! Just follow these easy steps:
-1. Start Microsoft Flight Simulator. As soon as you get to the main menu, the game is ready to accept connections.
-1. While waiting for MSFS to start (it takes a while!), download fs2ff.exe from the [latest release](https://github.com/astenlund/fs2ff/releases/latest).
-1. Double-click the file.
-1. If you get a popup window that tells you that "Windows protected your PC", click More info -> Run anyway.
-1. In the fs2ff app, click the big Connect button. Unless anything goes wrong, you will now be connected to MSFS.
-1. To verify the connection, open ForeFlight on your iPad or iPhone and navigate to More -> Devices.
-1. Do not forget to activate Auto Center (upper right corner) in the map view in ForeFlight.
-1. Now go fly!
-
-__N.B.__ Since I have not bothered to create an installer for this app, you will just have to save it somewhere on your harddrive where you can find it again. Why not your desktop? ;)
-
-## Ok, but what does it actually do?
-
-The app uses Microsoft's SimConnect SDK to continuously collect data about the player's own aircraft in the game, as well as other traffic around the player, and then broadcast these data so they can be picked up by ForeFlight. This requires that the ForeFlight device is connected to the same Wi-Fi network as the Flight Sim computer. Also, UDP port 49002 must not be blocked by any firewalls.
+see astenlund/fs2ff
 
 ## Does it work with other EFB apps?
-
-### SkyDemon
-
-Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will need to enable the "X-Plane" toggle in the "Third Party Devices" settings pane under the cogwheel in SkyDemon. Then, when you start flying, select "Use X-Plane".
+Yes any the use GDL90
 
 ### Garmin Pilot
 
-Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulator Data" option.
+Sort of.  This is a PITA the PC that is running FS2FF needs to have an IP of 10.29.39.1 and the device (iPad) needs to be in that subnet 10.29.39.x otherwise GP will ignore the traffic.  I have on board wifi on my PC.  It required enabling that has a hotspot setting a static ip on that NIC to 10.29.39.1 and then a static IP on the iPad of 10.29.39.2
 
 ### Other apps (not verified by me)
 
@@ -81,4 +63,4 @@ This is Microsoft telling you that the app has not been cryptographically signed
 
 ## I have problems!
 
-If you are experiencing any technical issues with the app (or if you see potential for other improvements), please open up an [issue](https://github.com/astenlund/fs2ff/issues), and I will be happy to take a look.
+Don't ask
