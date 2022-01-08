@@ -12,8 +12,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 
 #pragma warning disable 67
-// dotnet publish -c Release -r win-x64 /p:PublishSingleFile=true fs2ff.sln
-// copy C:\Users\jdamp\source\repos\fs2ff\bin\Release\netcoreapp3.1\win-x64\publish\fs2ff.exe c:\FSUIPC7\fs2ff.exe
 namespace fs2ff
 {
     [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "DispatcherTimer field is kept to prevent premature GC")]

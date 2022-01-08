@@ -21,11 +21,11 @@ namespace fs2ff.Models
             var hdg = Convert.ToInt16(att.TrueHeading * 10);
             var slipSkid = Convert.ToInt16(att.SkidSlip * 10);
             var yaw = Convert.ToInt16(att.TurnRate * 10);
-            var g = Convert.ToInt16((att.GForce * 10).Constrain(short.MinValue + 1, short.MaxValue - 1));
+            var g = Convert.ToInt16((att.GForce * 10).AdjustToBounds(short.MinValue + 1, short.MaxValue - 1));
 
-            var palt = Convert.ToInt32(att.PressureAlt.Constrain(short.MinValue + 1, short.MaxValue -1));
-            var ias = Convert.ToInt16(att.AirspeedIndicated.Constrain(short.MinValue + 1, short.MaxValue - 1));
-            var vs = Convert.ToInt16(att.VertSpeed.Constrain(short.MinValue + 1, short.MaxValue - 1));
+            var palt = Convert.ToInt32(att.PressureAlt.AdjustToBounds(short.MinValue + 1, short.MaxValue -1));
+            var ias = Convert.ToInt16(att.AirspeedIndicated.AdjustToBounds(short.MinValue + 1, short.MaxValue - 1));
+            var vs = Convert.ToInt16(att.VertSpeed.AdjustToBounds(short.MinValue + 1, short.MaxValue - 1));
 
             // Roll.
             Msg[4] = (byte)((roll >> 8) & 0xFF);

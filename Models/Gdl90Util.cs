@@ -55,22 +55,26 @@ namespace fs2ff.Models
             return meters * FEET_PER_METER;
         }
 
+        /// <summary>
+        /// Convert feet to meters
+        /// </summary>
+        /// <param name="feet">feet</param>
+        /// <returns>meters</returns>
         public static double FeetToMeters(this double feet)
         {
             return feet * METERS_PER_FOOT;
         }
 
+        /// <summary>
+        /// Meters to Miles
+        /// </summary>
+        /// <param name="meters"></param>
+        /// <returns></returns>
         public static double MetersToMiles(this double meters)
         {
             return meters * METERS_TO_MILES;
         }
-        
-        public static T Constrain<T>(this T val, T low, T high) where T : IComparable<T>
-        {
-            if (val.CompareTo(low) < 0) return low;
-            if (val.CompareTo(high) > 0) return high;
-            return val;
-        }
+
         /// <summary>
         /// Computes the CRC for the given byte array
         /// </summary>

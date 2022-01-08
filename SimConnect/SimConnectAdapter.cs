@@ -229,15 +229,15 @@ namespace fs2ff.SimConnect
 
             _simConnect?.SubscribeToSystemEvent(EVENT.ObjectAdded, "ObjectAdded");
             _simConnect?.SubscribeToSystemEvent(EVENT.SixHz, "6Hz");
-            _simConnect?.RequestFacilitiesList(SIMCONNECT_FACILITY_LIST_TYPE.AIRPORT, REQUEST.Airport);
+            
+            // TODO: will use the Aiport data for setting up FIS-B weather reports
+            //_simConnect?.RequestFacilitiesList(SIMCONNECT_FACILITY_LIST_TYPE.AIRPORT, REQUEST.Airport);
         }
 
         private void SimConnect_OnRecvQuit(SimConnectImpl sender, SIMCONNECT_RECV data)
         {
             DisconnectInternal(false);
         }
-
-        //private Stopwatch sw = Stopwatch.StartNew();
 
         private async void SimConnect_OnRecvSimobjectData(SimConnectImpl sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
@@ -250,8 +250,6 @@ namespace fs2ff.SimConnect
                 data.dwDefineID == (uint) DEFINITION.Position &&
                 data.dwData?.FirstOrDefault() is Position pos)
             {
-                //Debug.WriteLine($"Pos: {sw.ElapsedMilliseconds}");
-                //sw.Restart();
                 await PositionReceived.RaiseAsync(pos).ConfigureAwait(false);
                 return;
             }
@@ -318,20 +316,20 @@ namespace fs2ff.SimConnect
                 _simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
                 _simConnect.OnRecvEventObjectAddremove += SimConnect_OnRecvEventObjectAddremove;
-                _simConnect.OnRecvAirportList += _simConnect_OnRecvAirportList;
+                //_simConnect.OnRecvAirportList += _simConnect_OnRecvAirportList;
             }
         }
 
-        private List<SIMCONNECT_DATA_FACILITY_AIRPORT> airports = new List<SIMCONNECT_DATA_FACILITY_AIRPORT>();
-        private void _simConnect_OnRecvAirportList(SimConnectImpl sender, SIMCONNECT_RECV_AIRPORT_LIST data)
-        {
-            //throw new NotImplementedException();
-            Debug.WriteLine($"Data: {data.dwArraySize}");
-            foreach(SIMCONNECT_DATA_FACILITY_AIRPORT airport in data.rgData)
-            {
-                airports.Add(airport);
-            }
-        }
+        //private List<SIMCONNECT_DATA_FACILITY_AIRPORT> airports = new List<SIMCONNECT_DATA_FACILITY_AIRPORT>();
+        //private void _simConnect_OnRecvAirportList(SimConnectImpl sender, SIMCONNECT_RECV_AIRPORT_LIST data)
+        //{
+        //    //throw new NotImplementedException();
+        //    Debug.WriteLine($"Data: {data.dwArraySize}");
+        //    foreach(SIMCONNECT_DATA_FACILITY_AIRPORT airport in data.rgData)
+        //    {
+        //        airports.Add(airport);
+        //    }
+        //}
 
         private void UnsubscribeEvents()
         {
@@ -342,7 +340,8 @@ namespace fs2ff.SimConnect
                 _simConnect.OnRecvSimobjectData -= SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvException -= SimConnect_OnRecvException;
                 _simConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
-                _simConnect.OnRecvOpen -= SimConnect_OnRecvOpen; 
+                _simConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
+                // _simConnect.OnRecvAirportList -= _simConnect_OnRecvAirportList;
             }
         }
     }
