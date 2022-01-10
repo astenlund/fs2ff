@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 
 #pragma warning disable 67
+
 namespace fs2ff
 {
     [SuppressMessage("ReSharper", "NotAccessedField.Local", Justification = "DispatcherTimer field is kept to prevent premature GC")]
