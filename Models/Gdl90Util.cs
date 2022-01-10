@@ -26,7 +26,7 @@ namespace fs2ff.Models
         /// <param name="stepAmount">The amount to round the value by</param>
         /// <param name="type">The type of rounding to perform</param>
         /// <returns>The value rounded by the step amount and type</returns>
-        public static double RoundTo(this double value, double stepAmount)
+        public static double RoundBy(this double value, double stepAmount)
         {
             var inverse = 1 / stepAmount;
             var dividend = value * inverse;

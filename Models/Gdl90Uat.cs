@@ -3,17 +3,19 @@ using System.Threading;
 
 namespace fs2ff.Models
 {
-    public class Gdl90Relay : Gdl90Base
+    // TODO: MSFS currently doesn't support getting in game weather and Airport querying is broken
+    // Maybe I'll bother implementing this when I can actually get Weather data at a given airport
+    public class Gdl90Uat : Gdl90Base
     {
         // TODO: Add data counters for incoming UAT MSGs
         //private static long uatMetarCount = 0;
 
         /// <summary>
-        /// UAT message relay protocol (WIP)
+        /// UAT message protocol (WIP)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="msg"></param>
-        public Gdl90Relay(RelayMsgType id, byte[] msg) : base (msg.Length + 4)
+        public Gdl90Uat(RelayMsgType id, byte[] msg) : base (msg.Length + 4)
         {
             Msg[0] = (byte)id;
             

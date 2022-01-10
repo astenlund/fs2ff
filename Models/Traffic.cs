@@ -32,7 +32,7 @@ namespace fs2ff.Models
         public double MaxGrossWeight;
         public double AirspeedIndicated;
         public double AirspeedTrue;
-        public long TransponderCode;
+        public uint TransponderCode;
         public TranssponderState TransponderState;
     }
 

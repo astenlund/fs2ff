@@ -138,7 +138,7 @@ namespace fs2ff.SimConnect
             AddToDataDefinition(DEFINITION.Traffic, "MAX GROSS WEIGHT", "Pounds");
             AddToDataDefinition(DEFINITION.Traffic, "AIRSPEED INDICATED", "Knots");
             AddToDataDefinition(DEFINITION.Traffic, "AIRSPEED TRUE", "Knots");
-            AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER CODE:1", null, SIMCONNECT_DATATYPE.INT64);
+            AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER CODE:1", null, SIMCONNECT_DATATYPE.INT32);
             AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER STATE:1", null, SIMCONNECT_DATATYPE.INT32);
 
             _simConnect?.RegisterDataDefineStruct<Traffic>(DEFINITION.Traffic);
@@ -230,8 +230,10 @@ namespace fs2ff.SimConnect
             _simConnect?.SubscribeToSystemEvent(EVENT.ObjectAdded, "ObjectAdded");
             _simConnect?.SubscribeToSystemEvent(EVENT.SixHz, "6Hz");
             
-            // TODO: will use the Aiport data for setting up FIS-B weather reports
-            //_simConnect?.RequestFacilitiesList(SIMCONNECT_FACILITY_LIST_TYPE.AIRPORT, REQUEST.Airport);
+            // TODO: will use the Airport data for setting up FIS-B weather reports These are broken right now,
+            // they return the same 1234 airports 31 times.
+            // _simConnect?.RequestFacilitiesList(SIMCONNECT_FACILITY_LIST_TYPE.AIRPORT, REQUEST.Airport);
+            //_simConnect?.SubscribeToFacilities(SIMCONNECT_FACILITY_LIST_TYPE.AIRPORT, REQUEST.Airport);
         }
 
         private void SimConnect_OnRecvQuit(SimConnectImpl sender, SIMCONNECT_RECV data)
@@ -288,6 +290,8 @@ namespace fs2ff.SimConnect
 
                 return;
             }
+
+            Debug.WriteLine($"Unhandled event: {data.dwID}");
         }
 
         private void SimConnect_OnRecvSimobjectDataBytype(SimConnectImpl sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
@@ -316,20 +320,10 @@ namespace fs2ff.SimConnect
                 _simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
                 _simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
                 _simConnect.OnRecvEventObjectAddremove += SimConnect_OnRecvEventObjectAddremove;
-                //_simConnect.OnRecvAirportList += _simConnect_OnRecvAirportList;
+//                _simConnect.OnRecvAirportList += _simConnect_OnRecvAirportList;
+//                _simConnect.OnRecvCloudState += _simConnect_OnRecvCloudState;
             }
         }
-
-        //private List<SIMCONNECT_DATA_FACILITY_AIRPORT> airports = new List<SIMCONNECT_DATA_FACILITY_AIRPORT>();
-        //private void _simConnect_OnRecvAirportList(SimConnectImpl sender, SIMCONNECT_RECV_AIRPORT_LIST data)
-        //{
-        //    //throw new NotImplementedException();
-        //    Debug.WriteLine($"Data: {data.dwArraySize}");
-        //    foreach(SIMCONNECT_DATA_FACILITY_AIRPORT airport in data.rgData)
-        //    {
-        //        airports.Add(airport);
-        //    }
-        //}
 
         private void UnsubscribeEvents()
         {
@@ -341,8 +335,30 @@ namespace fs2ff.SimConnect
                 _simConnect.OnRecvException -= SimConnect_OnRecvException;
                 _simConnect.OnRecvQuit -= SimConnect_OnRecvQuit;
                 _simConnect.OnRecvOpen -= SimConnect_OnRecvOpen;
-                // _simConnect.OnRecvAirportList -= _simConnect_OnRecvAirportList;
+//                _simConnect.OnRecvAirportList -= _simConnect_OnRecvAirportList;
+//                _simConnect.OnRecvCloudState += _simConnect_OnRecvCloudState;
             }
         }
+
+        //private void _simConnect_OnRecvCloudState(SimConnectImpl sender, SIMCONNECT_RECV_CLOUD_STATE data)
+        //{
+        //    Debug.WriteLine($"Data: {data.dwArraySize}");
+        //}
+
+        //private Dictionary<string, SIMCONNECT_DATA_FACILITY_AIRPORT> airports = new Dictionary<string, SIMCONNECT_DATA_FACILITY_AIRPORT>();
+        //private void _simConnect_OnRecvAirportList(SimConnectImpl sender, SIMCONNECT_RECV_AIRPORT_LIST data)
+        //{
+        //    Debug.WriteLine($"Data: {data.dwArraySize}");
+        //    var owner = ViewModelLocator.Main.OwnerInfo;
+        //    foreach (SIMCONNECT_DATA_FACILITY_AIRPORT airport in data.rgData)
+        //    {
+        //        airports.TryAdd(airport.Icao, airport);
+        //        if (Math.Round(airport.Latitude) == Math.Round(owner.Latitude) && Math.Round(airport.Longitude) == Math.Round(owner.Longitude))
+        //        {
+        //            _simConnect?.WeatherRequestCloudState(REQUEST.Weather, (float)airport.Latitude - 1, (float)airport.Longitude + 1, 100, (float)airport.Latitude + 1, (float)airport.Longitude + 1, 10000, 0);
+        //        }
+        //    }
+        //}
+
     }
 }

@@ -85,7 +85,7 @@ namespace fs2ff.Models
             Msg[15] = (byte)((knots & 0x000F) << 4);
 
             // Vertical Speed 12 bits LSB = 64ft/m
-            var verticalVelocity = Convert.ToInt16(traffic.VerticalSpeed.RoundTo(64) / 64);
+            var verticalVelocity = Convert.ToInt16(traffic.VerticalSpeed.RoundBy(64) / 64);
             Msg[15] |= (byte)((verticalVelocity & 0x0F00) >> 8);
             Msg[16] = (byte)(verticalVelocity & 0x00FF);
 

@@ -11,8 +11,8 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
-        Width="600" Height="500"
-        MinWidth="600" MinHeight="500"
+        Width="600" Height="505"
+        MinWidth="600" MinHeight="505"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
