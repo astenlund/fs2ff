@@ -117,9 +117,9 @@ namespace fs2ff
             }
         }
 
-        public static uint AttitudeFrequencyMax => 10;
+        public static uint AttitudeFrequencyMax => 20;
 
-        public static uint AttitudeFrequencyMin => 4;
+        public static uint AttitudeFrequencyMin => 5;
 
         public bool AutoConnectEnabled
         {

@@ -56,15 +56,16 @@ namespace fs2ff
         {
             if (ViewModelLocator.Main.DataGdl90Enabled)
             {
-                var ffAhrs = new Gdl90FfmAhrs(a);
-                var data = ffAhrs.ToGdl90Message();
-                await Send(data).ConfigureAwait(false);
-
-                // Right now this isn't supported by GP  or FF
                 if (ViewModelLocator.Main.DataStratuxEnabled)
                 {
                     var ahrs = new Gdl90Ahrs(a);
-                    data = ahrs.ToGdl90Message();
+                    var data = ahrs.ToGdl90Message();
+                    await Send(data).ConfigureAwait(false);
+                }
+                else
+                {
+                    var ffAhrs = new Gdl90FfmAhrs(a);
+                    var data = ffAhrs.ToGdl90Message();
                     await Send(data).ConfigureAwait(false);
                 }
             }
