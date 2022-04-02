@@ -133,7 +133,7 @@ namespace fs2ff {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public uint att_freq {
             get {
                 return ((uint)(this["att_freq"]));

@@ -30,7 +30,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="att_freq" Type="System.UInt32" Scope="User">
-      <Value Profile="(Default)">20</Value>
+      <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="ip_hint_time" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">10</Value>
