@@ -12,7 +12,7 @@ namespace fs2ff {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class Preferences : global::System.Configuration.ApplicationSettingsBase {
         
         private static Preferences defaultInstance = ((Preferences)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Preferences())));
@@ -46,52 +46,43 @@ namespace fs2ff {
                 this["att_enabled"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool gdl90_enabled
-        {
-            get
-            {
+        public bool gdl90_enabled {
+            get {
                 return ((bool)(this["gdl90_enabled"]));
             }
-            set
-            {
+            set {
                 this["gdl90_enabled"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool stratus_enabled
-        {
-            get
-            {
+        public bool stratus_enabled {
+            get {
                 return ((bool)(this["stratus_enabled"]));
             }
-            set
-            {
+            set {
                 this["stratus_enabled"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool stratux_enabled
-        {
-            get
-            {
+        public bool stratux_enabled {
+            get {
                 return ((bool)(this["stratux_enabled"]));
             }
-            set
-            {
+            set {
                 this["stratux_enabled"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
@@ -127,7 +118,7 @@ namespace fs2ff {
                 this["ip_detection_enabled"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]

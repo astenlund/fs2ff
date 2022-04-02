@@ -8,6 +8,15 @@
     <Setting Name="att_enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="gdl90_enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="stratus_enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="stratux_enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
     <Setting Name="pos_enabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -15,16 +24,16 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ip_detection_enabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="auto_connect_enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="att_freq" Type="System.UInt32" Scope="User">
-      <Value Profile="(Default)">6</Value>
+      <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="ip_hint_time" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">10</Value>
-    </Setting>
-    <Setting Name="auto_connect_enabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
