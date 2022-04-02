@@ -194,13 +194,13 @@ namespace fs2ff.SimConnect
                 // Sets the ownership report to run at ~10Hz.
                 // This is less taxing than pulling with ONCE
                 // SIM_FRAME = ~50hz or ~20ms (20ms * interval) so 5 * 20 == 200ms or 10Hz
-                // GDL90 spec is 5hz but I find this Synthetic vision smoother at 10hz
+                // GDL90 spec is 5hz but I find this Synthetic vision smoother at 10hz or 20hz
                 _simConnect?.RequestDataOnSimObject(
                     REQUEST.Owner, DEFINITION.Traffic,
                     SimConnectImpl.SIMCONNECT_OBJECT_ID_USER,
                     SIMCONNECT_PERIOD.SIM_FRAME,
                     SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
-                    0, 5, 0);
+                    0, 2, 0);
             }
 
             if (ViewModelLocator.Main.DataGdl90Enabled)
@@ -212,7 +212,7 @@ namespace fs2ff.SimConnect
                     SimConnectImpl.SIMCONNECT_OBJECT_ID_USER,
                     SIMCONNECT_PERIOD.SIM_FRAME,
                     SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT,
-                    0, 10, 0);
+                    0, 2, 0);
             }
             else
             {

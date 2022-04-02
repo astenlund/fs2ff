@@ -49,7 +49,7 @@ namespace fs2ff {
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool gdl90_enabled
         {
             get
@@ -118,7 +118,7 @@ namespace fs2ff {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ip_detection_enabled {
             get {
                 return ((bool)(this["ip_detection_enabled"]));
@@ -130,7 +130,7 @@ namespace fs2ff {
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool auto_connect_enabled {
             get {
                 return ((bool)(this["auto_connect_enabled"]));
@@ -142,7 +142,7 @@ namespace fs2ff {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public uint att_freq {
             get {
                 return ((uint)(this["att_freq"]));

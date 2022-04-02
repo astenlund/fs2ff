@@ -123,7 +123,7 @@
                 <RadioButton x:Name="Stratux"
                     Content="+ Stratux" Height="32" GroupName="TypeRadio" FontSize="12" Margin="10,0,0,0"
                     IsChecked="{Binding DataStratuxEnabled, Mode=TwoWay}" IsEnabled="{Binding DataGdl90Enabled}" 
-                    ToolTip="Emulate Stratux Device. Warning Currently doesn't work with Garmin Pilot"/>
+                    ToolTip="Emulate Stratux Works with FF and Garmin Pilot ver 10.7.1+ just needs to be on the same subnet as the iPad"/>
                 <Label
                     Content="{Binding Value, ElementName=Slider, Converter={c:FormatStringConverter}, ConverterParameter='ATTITUDE FREQ: {0} Hz'}"
                     Margin="0,14,0,5" />
