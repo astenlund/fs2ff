@@ -34,6 +34,13 @@ namespace fs2ff.Models
         public double AirspeedTrue;
         public uint TransponderCode;
         public TranssponderState TransponderState;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string AtcModel;
+
+        public double MaxMach;
+        public double MaxGforceSeen;
+
     }
 
     public static class TrafficExtensions

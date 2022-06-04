@@ -95,7 +95,17 @@ namespace fs2ff.Models
             trk /= Gdl90Util.TRACK_RESOLUTION;
             Msg[17] = Convert.ToByte(trk);
 
-            if (traffic.Category == "Helicopter")
+            if (traffic.MaxMach > 5)
+            {
+                // Space or trans-atmospheric vehicle (Dark Star)
+                Msg[18] = 15;
+            }
+            else if (traffic.MaxMach > 1.1 || traffic.MaxGforceSeen > 5)
+            {
+                // Highly Maneuverable > 5G acceleration and high speed (F18 and other High G aircraft)
+                Msg[18] = 6;
+            }
+            else if (traffic.Category == "Helicopter")
             {
                 Msg[18] = 0x7;
             }
@@ -104,24 +114,26 @@ namespace fs2ff.Models
                 if (traffic.MaxGrossWeight < 15500)
                 {
                     // Light
-                    Msg[18] = 0x1;
+                    Msg[18] = 1;
                 }
                 else if (traffic.MaxGrossWeight < 75000)
                 {
                     // Small
-                    Msg[18] = 0x2;
+                    Msg[18] = 2;
                 }
                 else if (traffic.MaxGrossWeight < 300000)
                 {
                     // Large
-                    Msg[18] = 0x2;
+                    Msg[18] = 3;
                 }
                 else
                 {
                     // Heavy (B747)
-                    Msg[18] = 0x5;
+                    Msg[18] = 5;
                 }
-                // TODO: Add more aircraft types (glider, high-speed, High Vortex, etc.)
+
+                // TODO: Add more aircraft types (glider, High Vortex, etc.)
+                // Could use the AtcModel to do a string lookup for a given set of aircraft etc.
             }
             else
             {

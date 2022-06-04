@@ -104,7 +104,7 @@ namespace fs2ff.SimConnect
             AddToDataDefinition(DEFINITION.Attitude, "AIRSPEED TRUE", "Knots");
             AddToDataDefinition(DEFINITION.Attitude, "PRESSURE ALTITUDE", "Feet");
             AddToDataDefinition(DEFINITION.Attitude, "VELOCITY WORLD Y", "Feet per minute");
-            AddToDataDefinition(DEFINITION.Attitude, "G FORCE", null);
+            AddToDataDefinition(DEFINITION.Attitude, "G FORCE", "Gforce");
 
             _simConnect?.RegisterDataDefineStruct<Attitude>(DEFINITION.Attitude);
         }
@@ -140,6 +140,10 @@ namespace fs2ff.SimConnect
             AddToDataDefinition(DEFINITION.Traffic, "AIRSPEED TRUE", "Knots");
             AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER CODE:1", null, SIMCONNECT_DATATYPE.INT32);
             AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER STATE:1", null, SIMCONNECT_DATATYPE.INT32);
+            AddToDataDefinition(DEFINITION.Traffic, "ATC MODEL", null, SIMCONNECT_DATATYPE.STRING32);
+            AddToDataDefinition(DEFINITION.Traffic, "MACH MAX OPERATE", "Mach", SIMCONNECT_DATATYPE.FLOAT64);
+            AddToDataDefinition(DEFINITION.Traffic, "MAX G FORCE", "Gforce", SIMCONNECT_DATATYPE.FLOAT64);
+
 
             _simConnect?.RegisterDataDefineStruct<Traffic>(DEFINITION.Traffic);
         }
@@ -224,7 +228,7 @@ namespace fs2ff.SimConnect
                     0, 0, 0);
             }
 
-            _simConnect?.RequestDataOnSimObjectType(REQUEST.TrafficAircraft, DEFINITION.Traffic, 92600, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
+            _simConnect?.RequestDataOnSimObjectType(REQUEST.TrafficAircraft, DEFINITION.Traffic, 92600 * 2, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
             _simConnect?.RequestDataOnSimObjectType(REQUEST.TrafficHelicopter, DEFINITION.Traffic, 92600, SIMCONNECT_SIMOBJECT_TYPE.HELICOPTER);
 
             _simConnect?.SubscribeToSystemEvent(EVENT.ObjectAdded, "ObjectAdded");
@@ -283,9 +287,16 @@ namespace fs2ff.SimConnect
             {
                 // Prevents all the parked aircraft from showing up on ADS-B
                 // Could also use Master power/Avionics state but a plane with a transponder will more likely have ADS-B
-                if (tfk.TransponderState != TranssponderState.Off)
+                //if (tfk.TransponderState != TranssponderState.Off)
+                if (tfk.OnGround == false || tfk.TransponderState != TranssponderState.Off)
                 {
                     await TrafficReceived.RaiseAsync(tfk, data.dwRequestID).ConfigureAwait(false);
+                }
+
+                // temp
+                if (tfk.TransponderState != TranssponderState.Off)
+                {
+                    Debug.WriteLine(tfk.TailNumber);
                 }
 
                 return;
