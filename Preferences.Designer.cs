@@ -154,5 +154,17 @@ namespace fs2ff {
                 this["ip_hint_time"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool hide_static_traffic_enabled {
+            get {
+                return ((bool)(this["hide_static_traffic_enabled"]));
+            }
+            set {
+                this["hide_static_traffic_enabled"] = value;
+            }
+        }
     }
 }

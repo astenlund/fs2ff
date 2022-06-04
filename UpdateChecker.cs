@@ -13,7 +13,7 @@ namespace fs2ff
                 using var handler = new HttpClientHandler { AllowAutoRedirect = false };
                 using var client = new HttpClient(handler);
 
-                var response = await client.GetAsync(new Uri("https://github.com/astenlund/fs2ff/releases/latest")).ConfigureAwait(false);
+                var response = await client.GetAsync(new Uri("https://github.com/jeffdamp-wave/fs2ff/releases/latest")).ConfigureAwait(false);
                 var location = response.Headers.Location;
                 var versionStr = location?.Segments[^1];
 

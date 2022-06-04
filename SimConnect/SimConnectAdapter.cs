@@ -141,8 +141,8 @@ namespace fs2ff.SimConnect
             AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER CODE:1", null, SIMCONNECT_DATATYPE.INT32);
             AddToDataDefinition(DEFINITION.Traffic, "TRANSPONDER STATE:1", null, SIMCONNECT_DATATYPE.INT32);
             AddToDataDefinition(DEFINITION.Traffic, "ATC MODEL", null, SIMCONNECT_DATATYPE.STRING32);
-            AddToDataDefinition(DEFINITION.Traffic, "MACH MAX OPERATE", "Mach", SIMCONNECT_DATATYPE.FLOAT64);
-            AddToDataDefinition(DEFINITION.Traffic, "MAX G FORCE", "Gforce", SIMCONNECT_DATATYPE.FLOAT64);
+            AddToDataDefinition(DEFINITION.Traffic, "MACH MAX OPERATE", "Mach");
+            AddToDataDefinition(DEFINITION.Traffic, "MAX G FORCE", "Gforce");
             AddToDataDefinition(DEFINITION.Traffic, "LIGHT BEACON", "Bool", SIMCONNECT_DATATYPE.INT32);
             AddToDataDefinition(DEFINITION.Traffic, "PLANE ALT ABOVE GROUND MINUS CG", "Feet");
             
@@ -290,7 +290,7 @@ namespace fs2ff.SimConnect
             {
                 // Prevents all the parked aircraft from showing up on ADS-B
                 // Modified to work better with VATSIM since it doesn't report Transponder state
-                if (tfk.OnGround == false || tfk.TransponderState != TranssponderState.Off || tfk.LightBeaconOn)
+                if (!ViewModelLocator.Main.DataHideTrafficEnabled || !tfk.OnGround || tfk.TransponderState != TranssponderState.Off || tfk.LightBeaconOn)
                 {
                     await TrafficReceived.RaiseAsync(tfk, data.dwRequestID).ConfigureAwait(false);
                 }

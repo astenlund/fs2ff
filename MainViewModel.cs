@@ -33,6 +33,8 @@ namespace fs2ff
         private bool _autoConnectEnabled = Preferences.Default.auto_connect_enabled;
         private bool _dataAttitudeEnabled = Preferences.Default.att_enabled;
         private bool _gdl90Enabled = Preferences.Default.gdl90_enabled;
+        private bool _hideTrafficEnabled = Preferences.Default.hide_static_traffic_enabled;
+        
         private bool _dataPositionEnabled = Preferences.Default.pos_enabled;
         private bool _dataTrafficEnabled = Preferences.Default.tfk_enabled;
         private bool  _dataStratusEnabled = Preferences.Default.stratus_enabled;
@@ -103,7 +105,7 @@ namespace fs2ff
             AutoConnecting
         }
 
-        public static string WindowTitle => $"fs2ff - {App.InformationalVersion}";
+        public static string WindowTitle => $"fs2ff (GDL90) - {App.InformationalVersion}";
 
         public uint AttitudeFrequency
         {
@@ -189,13 +191,26 @@ namespace fs2ff
                 {
                     this._gdl90Enabled = value;
                     Preferences.Default.gdl90_enabled = value;
-                    this.DataGdl90Enabled = value;
                     Preferences.Default.Save();
                     ResetDataSenderConnection();
                 }
             }
         }
 
+        public bool DataHideTrafficEnabled
+        {
+            get => this._hideTrafficEnabled;
+            set
+            {
+                if (value != this._hideTrafficEnabled)
+                {
+                    this._hideTrafficEnabled = value;
+                    Preferences.Default.hide_static_traffic_enabled = value;
+                    Preferences.Default.Save();
+                }
+            }
+        }
+        
         public bool DataStratusEnabled
         {
             get => _dataStratusEnabled;

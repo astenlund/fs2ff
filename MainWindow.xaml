@@ -12,7 +12,7 @@
         Title="{Binding WindowTitle}"
         Icon="img\icon.ico"
         Width="600" Height="505"
-        MinWidth="600" MinHeight="505"
+        MinWidth="600" MinHeight="540"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
@@ -109,6 +109,10 @@
                 <CheckBox
                     IsChecked="{Binding DataTrafficEnabled, Mode=TwoWay}"
                     Content="Traffic" />
+                <CheckBox
+                    IsChecked="{Binding DataHideTrafficEnabled, Mode=TwoWay}"
+                    Content="Hide Static Traffic"
+                    ToolTip="Filter out inactive aircraft statically placed on the ground at airports"/>
                 <CheckBox
                     IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
                     Content="Attitude" />
