@@ -86,14 +86,15 @@
                 <CheckBox
                     IsChecked="{Binding AutoDetectIpEnabled, Mode=TwoWay}"
                     Content="Auto-detect*"
-                    ToolTip="Requires ForeFlight running in the foreground" />
+                    ToolTip="Attempts to locate the EFB already running" />
                 <TextBox
+                    ToolTip="Manually set the EFBs IP address here"
                     Text="{
                         Binding IpAddress, Mode=TwoWay,
                         Converter={c:IpAddressToStringConverter},
                         UpdateSourceTrigger=PropertyChanged, Delay=5000}"
                     Template="{StaticResource WatermarkTextBoxTemplate}"
-                    Tag="255.255.255.255"
+                    Tag="192.168.0.45"
                     Margin="0,10,0,0">
                     <i:Interaction.Behaviors>
                         <b:MoveFocusOnEnterBehavior />
@@ -105,17 +106,20 @@
                     Margin="0,20,0,5" />
                 <CheckBox
                     IsChecked="{Binding DataPositionEnabled, Mode=TwoWay}"
-                    Content="Position" />
+                    Content="Position"
+                    ToolTip="Enable/Disable sending of Position data to EFB"/>
                 <CheckBox
                     IsChecked="{Binding DataTrafficEnabled, Mode=TwoWay}"
-                    Content="Traffic" />
+                    Content="Traffic"
+                    ToolTip="Enable/Disable sending of Traffic data to EFB"/>
                 <CheckBox
                     IsChecked="{Binding DataHideTrafficEnabled, Mode=TwoWay}"
                     Content="Hide Static Traffic"
                     ToolTip="Filter out inactive aircraft statically placed on the ground at airports"/>
                 <CheckBox
                     IsChecked="{Binding DataAttitudeEnabled, Mode=TwoWay}"
-                    Content="Attitude" />
+                    Content="Attitude"
+                    ToolTip="Enable/Disable sending of Attitude data to EFB"/>
                 <CheckBox
                     IsChecked="{Binding DataGdl90Enabled, Mode=TwoWay}"
                     Content="Use GDL90 Protocol"
@@ -139,7 +143,8 @@
                     Maximum="{Binding AttitudeFrequencyMax, Converter={c:UIntToDoubleConverter}}"
                     Focusable="False"
                     TickPlacement="Both"
-                    IsSnapToTickEnabled="True" />
+                    IsSnapToTickEnabled="True"
+                    ToolTip="Adjusts the update rate of sending AHARS data to the EFB"/>
             </StackPanel>
         </ui:SplitView.Pane>
         <Grid>
