@@ -40,7 +40,8 @@ namespace fs2ff.Models
 
         public double MaxMach;
         public double MaxGforceSeen;
-
+        public bool LightBeaconOn;
+        public double AltAboveGroundCG;
     }
 
     public static class TrafficExtensions

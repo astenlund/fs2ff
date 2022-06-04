@@ -64,7 +64,8 @@ namespace fs2ff.Models
             Msg[12] |= 0x01;
 
             // MSFS has a desire to show stationary planes on not on ground
-            if (!traffic.OnGround && (traffic.GroundVelocity > 0 || traffic.VerticalSpeed > 0))
+            // VATSIM likes to have some jitter and not put the plane on the ground
+            if (!traffic.OnGround && traffic.AltAboveGroundCG > 10 && (traffic.GroundVelocity != 0 || traffic.VerticalSpeed != 0))
             {
                 Msg[12] = (byte)(Msg[12] | 1 << 3);
 
