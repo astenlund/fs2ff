@@ -292,7 +292,15 @@ namespace fs2ff.SimConnect
                 // Modified to work better with VATSIM since it doesn't report Transponder state
                 if (!ViewModelLocator.Main.DataHideTrafficEnabled || !tfk.OnGround || tfk.TransponderState != TranssponderState.Off || tfk.LightBeaconOn)
                 {
-                    await TrafficReceived.RaiseAsync(tfk, data.dwRequestID).ConfigureAwait(false);
+                    try
+                    {
+                        await TrafficReceived.RaiseAsync(tfk, data.dwRequestID).ConfigureAwait(false);
+                    }
+                    catch(Exception ex)
+                    {
+                        // been getting some bad traffic lately just extra protection
+                        Console.Error.WriteLine($"Exception: {ex}");
+                    }
                 }
 
                 return;
