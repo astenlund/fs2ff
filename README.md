@@ -32,6 +32,10 @@ Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will n
 
 Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulator Data" option.
 
+### OzRunways
+
+YES! Go to "Settings" -> "Simulator Mode" and enable "Simulator Mode" copy "My IP Address" and enter it into fs2ff in "Settings".
+
 ### Other apps (not verified by me)
 
 - FlyQ EFB (thanks, @erayymz)
