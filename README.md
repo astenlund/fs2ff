@@ -32,6 +32,10 @@ Yes! SkyDemon is compatible with X-Plane, which uses the same format. You will n
 
 Yes! Go to "Settings" -> "Flight Simulation" and enable the "Use Flight Simulator Data" option.
 
+### Enroute Flight Navigation
+
+Yes! Go to "Settings" -> "Primary position data source" and select "Traffic data receiver" as the main source. More information can be found in the [Enroute Flight Navigation Manual](https://akaflieg-freiburg.github.io/enrouteManual/02-tutorialBasic/07-simulator.html#connect-your-flight-simulator).
+
 ### Other apps (not verified by me)
 
 - FlyQ EFB (thanks, @erayymz)
